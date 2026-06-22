@@ -1,0 +1,3816 @@
+<!DOCTYPE html>
+
+
+<!DOCTYPE html>
+<html>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<head>
+		<title>Physics</title>
+
+        <style>
+
+
+  
+          </style>
+          <link rel = "stylesheet"type="text/css" href = "MyStyle.css"/>
+	</head>
+	
+<body>
+  <table > 
+    <tr>
+    <td ><a href = "Second Website homepage.html">Homepage</a>
+      <td ><a href = "Ideal Gas with Interaction.html">Ideal Gas</a>
+  
+      <td ><a href = "Project Portfolio.html">Project Portfolio</a>
+    </table>
+  
+  
+<canvas id="myCanvas" style="border:0px solid"></canvas>
+
+
+
+<!-- <Button> -->
+  <table>
+    <tr>
+      <td>
+  <button onclick = "myButton1()">Change Atom</button>
+</td>
+
+<td>
+  <input type="range" min="1" max="373.15" value="298.15" step="0.01" id="temperature_slider" oninput="myTemperatureSlider()">
+  <p>Temperature: <span id="tempDisp">298.15&deg K.</span></p>
+
+</td>
+
+<td>
+  <input type="range" min="5" max="20" value="14" id="volume_slider" oninput="myVolumeSlider()">
+  <p>Volume: <span id="volDisp">14e-27 cubic meters.</span></p>
+
+</td>
+
+
+</tr>
+</table>
+
+<p>See the particles that make the gasses we see. Observe how different factors can affect the distributions of speeds and the general behavior of the gas.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+
+
+function showAlert(myMessage) {
+  const messageDiv = document.querySelector('#customAlert .message');
+  messageDiv.innerHTML = myMessage.replace(/\n/g, '<br>');
+
+  const customAlert = document.getElementById('customAlert');
+  const copiedMessage = document.getElementById('copiedMessage');
+
+  customAlert.addEventListener('click', function() {
+    navigator.clipboard.writeText(myMessage)
+      .then(() => {
+        copiedMessage.style.display = 'block';
+        setTimeout(() => {
+          copiedMessage.style.display = 'none';
+        }, 2000);
+      })
+      .catch(err => {
+        console.error('Failed to copy: ', err);
+      });
+  });
+
+  customAlert.style.display = 'block';
+}
+
+
+function hideAlert() {
+  document.getElementById('customAlert').style.display = 'none';
+}
+function closeAlert() {
+    document.getElementById('customAlert').style.display = 'none';
+  }
+
+
+	// canvas setup - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+	var canvas = document.getElementById("myCanvas");
+	var c = canvas.getContext("2d");
+
+
+
+	canvas.width = 3840;
+	canvas.height = canvas.width * (window.innerHeight)/(window.innerWidth);
+	canvas.style.width = `${window.innerWidth}px`;
+canvas.style.height = `${window.innerHeight}px`;
+  //document.body.style.zoom = (window.innerWidth - 10)/(canvas.width);
+	var boxScaled = 2e-9;
+	var boxScale = boxScaled*10;
+  var scaleUp = 1.2
+	var Scale = boxScale/scaleUp;
+	var Sizing = Math.min(canvas.width, canvas.height) / Scale;
+	var simWidth = canvas.width / Sizing;
+	var simHeight = canvas.height / Sizing;
+
+
+//Test text variable
+
+var button1 = 0;
+var button2 = 0;
+var button3 = 0;
+
+//Mathematical operations
+function sum(A){
+var sum = 0;
+for(var x = 0; x < A.length; x++){
+sum = sum + A[x];
+}    
+return sum;
+}
+function mean(A){
+var mean;
+mean = sum(A)/A.length;
+return mean;
+}
+function median(A){
+var median;
+var sortList = A.sort(function(a, b){return a - b;});
+if(A.length/2 == Math.round(A.length/2)){
+median = mean(sortList[A.length/2 - 1], sortList[A.length/2]);
+}
+if(A.length/2 !== Math.round(A.length/2)){
+median = sortList(Math.ceil(A.length/2) - 1);
+}
+return median;
+}
+function mode(A){
+var sortA = A.sort(function(a, b){return a - b;});
+var frequencyList = [];
+var mode = [];
+for(var x = 0; x < A.length; x++){
+if(x == 0){frequencyList.push({number:sortA[x], frequency:1});}
+else{
+if(sortA[x] == sortA[x - 1]){frequencyList[frequencyList.length - 1].frequency++;}	
+else{frequencyList.push({number:sortA[x], frequency:1});}
+}
+
+}
+
+var sortFrequencyList = frequencyList.sort(function(a, b){return a.frequency - b.frequency;});
+
+for(var y = sortFrequencyList.length - 1; y > -1; y--){
+if(y == sortFrequencyList.length - 1){mode.push(sortFrequencyList[y].number);}
+else{if(sortFrequencyList[y].frequency == sortFrequencyList[y + 1].frequency){mode.push(sortFrequencyList[y].number);
+}
+
+else{break;}
+}
+
+}
+mode.sort(function(a, b){return a - b;});
+
+return mode;
+}
+function root_mean_square(A){
+var root_mean_square;
+var sum_of_squares = 0;
+for(var x = 0; x < A.length; x++){
+sum_of_squares = sum_of_squares + Math.pow(A[x], 2);
+}    
+root_mean_square = Math.sqrt(1/A.length * sum_of_squares);
+return root_mean_square
+}
+function standard_deviation(A){
+var standard_deviation;
+var sum_of_the_squares_of_the_differences_from_the_mean = 0;
+for(var x = 0; x < A.length; x++){
+    sum_of_the_squares_of_the_differences_from_the_mean = sum_of_the_squares_of_the_differences_from_the_mean + Math.pow(A[x] - mean(A), 2);
+}    
+standard_deviation = Math.sqrt(1/A.length * sum_of_the_squares_of_the_differences_from_the_mean);
+return standard_deviation;
+}
+
+//Vector operations
+function scale(A, scaling){
+var result = {x:A.x * scaling, y:A.y * scaling, z:A.z * scaling};
+return result;
+}
+function magnitude(A){
+return Math.sqrt(A.x * A.x +  A.y * A.y +  A.z * A.z);	
+}
+function normalize(A){
+var result;
+if(magnitude(A) > 0){
+result = scale(A, 1/magnitude(A));}
+else{result = {x:0, y:0, z:0};}
+return result;
+}
+function add(A, B){
+var result = {x:A.x +  B.x, y:A.y +  B.y, z:A.z +  B.z};
+return result;
+}
+function subtract(A, B){
+var result = {x:A.x - B.x, y:A.y - B.y, z:A.z - B.z};
+
+return result;
+}
+function dot(A, B){
+return A.x  *  B.x +  A.y  *  B.y +  A.z  *  B.z;
+}
+function cross(A, B){
+var result = {x:A.y * B.z - A.z * B.y, y:A.z * B.x - A.x * B.z, z:A.x * B.y - A.y * B.x};
+return result;
+}
+function rotate(A, axis, angle){
+//Rodrigues's rotation formula
+var e = normalize(axis);
+var term1 = scale(A, Math.cos(angle));
+var term2  = scale(cross(e, A), Math.sin(angle));
+var term3 = scale(e, dot(e, A)*(1 - Math.cos(angle)));
+
+var result = add(add(term1, term2), term3);
+
+return result;
+}
+
+
+//Constants
+var Pi = 3.1415926535897932384626433832795028//841971693993751058209749445923078164062862089986280348253421170679;
+var permittivity_of_free_space = 8.85418782e-12;
+var Gravitational_Constant = 6.67430e-11;
+var speed_of_light = 2.99792458e8;//2.99792458e6 seems to match predicted value more
+var e = 2.7182818284590452353602874713526624977//572470936999595749669676277240766303535945713821785251664274;
+var Boltzmann_Constant = 1.380649e-23;
+var Avogadro_number = 6.02214076e23;
+var g = 9.8;
+var Hamaker_Constant = 0;
+var astronomical_unit_to_meters_conversion_factor = 149597870700;
+
+//Keplerian elements
+function cartesian_to_kepler(position, velocity, time, mass, center, unit){
+var orbital_elements;
+var t = time;
+var GM = Gravitational_Constant * mass;
+var r = {x:subtract(position, center).x, y:subtract(position, center).y, z:subtract(position, center).z};
+var X = r.x;
+var Y = r.y;
+var Z = r.z;
+
+var v = {x:velocity.x, y:velocity.y, z:velocity.z};
+var VX = v.x;
+var VY = v.y;
+var VZ = v.z;
+
+var h = cross(r, v);
+var h_mag = magnitude(h);
+
+var r_mag = magnitude(r);
+var v_mag = magnitude(v);
+
+var E = Math.pow(v_mag, 2)/2 - GM/r_mag;
+
+var A = -GM/(2 * E);
+
+var EC = Math.pow(1 - Math.pow(h_mag, 2)/(A * GM), 1/2);
+
+var IN = Math.acos(h.z/h_mag);
+
+var OM = Math.atan2(h.x, -h.y);
+OM = (OM + 2 * Pi) % (2 * Pi);
+//var TA = Math.atan2(Math.pow(A * (1 - Math.pow(EC, 2))/GM, 1/2) * dot(v, r), A * (1 - Math.pow(EC, 2)) - r_mag);
+/*
+var TA = Math.acos((A * (1 - Math.pow(EC, 2)) - r_mag)/(EC * r_mag));
+*/
+//Alternative TA calculation
+var TA = Math.acos(dot(subtract(scale(cross(v, h), 1/GM), normalize(r)), r)/(magnitude(subtract(scale(cross(v, h), 1/GM), normalize(r))) * magnitude(r)));
+if(dot(r, v) < 0){
+TA = 2 * Pi - TA; 
+}
+var W = Math.atan2(r.z/Math.sin(IN), (r.x * Math.cos(OM) + r.y * Math.sin(OM))) - TA;
+W = (W + 2 * Pi) % (2 * Pi);
+var EA = 2 * Math.atan(Math.pow((1 - EC)/(1 + EC), 1/2) * Math.tan(TA/2));
+EA = (EA + 2 * Pi) % (2 * Pi);
+var T = t - 1/(Math.pow(GM/Math.pow(a, 3), 1/2)) * (EA - EC * Math.sin(EA));
+
+var MA = EA - EC * Math.sin(EA);
+
+var PR = 2 * Pi * Math.pow(Math.pow(A, 3)/GM, 1/2);
+
+if(unit == "degree"){
+orbital_elements = {EC:EC, A:A, IN:IN * 180/Pi, OM:OM * 180/Pi, W:W * 180/Pi, TA:TA * 180/Pi, MA:MA * 180/Pi};
+}
+if(unit == "radian"){
+    orbital_elements = {EC:EC, A:A, IN:IN, OM:OM, W:W, TA:TA, MA:MA};
+}
+return orbital_elements;
+}
+function kepler_to_cartesian(Mass, time, time_at_periapsis, eccentricity, semi_major_axis, inclination, longitude_of_the_ascending_node, argument_of_the_periapsis, unit){
+//Ω is longitude of ascending node, or right ascension of ascending node
+//ω is the argmuent of periapsis 
+//ν is the true anomaly
+//µ is GM
+//i is inclination
+//a is semi-major axis
+//e is eccentricity
+//MA is mean anomaly
+//EA is eccentric anomaly
+//p is semi-latus rectum equal to a(1-e^2)
+
+var i = inclination;
+var argument_of_periapsis = argument_of_the_periapsis;
+var longitude_of_ascending_node = longitude_of_the_ascending_node;
+if(unit == "degree"){
+	i = inclination * Pi/180;
+	longitude_of_ascending_node = Pi/180 * longitude_of_the_ascending_node;
+	argument_of_periapsis = Pi/180 * argument_of_the_periapsis;
+	
+}
+
+var position = {x:0, y:0, z:0};
+var velocity = {x:0, y:0, z:0};
+var iterations = 10000;
+var a = semi_major_axis;
+var e = eccentricity;
+var mean_anomaly = Math.pow(Gravitational_Constant * Mass/Math.pow(a, 3), 1/2) * (time - time_at_periapsis); //Angle of orbit completed at given time (∆t/T)
+var MA = mean_anomaly;
+var eccentric_anomaly = 0;
+var n = 0;
+while(n < iterations){
+eccentric_anomaly = eccentric_anomaly - (eccentric_anomaly - e * Math.sin(eccentric_anomaly) - MA)/(1 - eccentric_anomaly * Math.cos(eccentric_anomaly));
+n++;
+}
+var EA = eccentric_anomaly;
+
+var true_anomaly = 2 * Math.atan(Math.pow((1+e)/(1-e), 1/2) * Math.tan(EA/2));
+
+var radius = a * (1 - e * Math.cos(EA));
+var r = radius;
+
+var p = a * (1 - Math.pow(e, 2));
+
+var specific_angular_momentum = Math.pow(Gravitational_Constant * Mass * a * (1-Math.pow(e, 2)), 1/2);
+var h = specific_angular_momentum;
+
+position.x = r * (Math.cos(longitude_of_ascending_node) * Math.cos(argument_of_periapsis + true_anomaly) - Math.sin(longitude_of_ascending_node) * Math.sin(argument_of_periapsis + true_anomaly) * Math.cos(i));
+position.y = r * (Math.sin(longitude_of_ascending_node) * Math.cos(argument_of_periapsis + true_anomaly) + Math.cos(longitude_of_ascending_node) * Math.sin(argument_of_periapsis + true_anomaly) * Math.cos(i));
+position.z = r * (Math.sin(i) * Math.sin(argument_of_periapsis + true_anomaly)); 
+
+velocity.x = (position.x * h * e)/(r * p) * Math.sin(true_anomaly) - h/r * (Math.cos(longitude_of_ascending_node) * Math.sin(argument_of_periapsis + true_anomaly) + Math.sin(longitude_of_ascending_node) * Math.cos(argument_of_periapsis + true_anomaly) * Math.cos(i)); 
+velocity.y = (position.y * h * e)/(r * p) * Math.sin(true_anomaly) - h/r * (Math.sin(longitude_of_ascending_node) * Math.sin(argument_of_periapsis + true_anomaly) - Math.cos(longitude_of_ascending_node) * Math.cos(argument_of_periapsis + true_anomaly) * Math.cos(i));
+velocity.z = (position.z * h * e)/(r * p) * Math.sin(true_anomaly) + h/r *(Math.sin(i) * Math.cos(argument_of_periapsis + true_anomaly));
+
+
+return [{x:position.x, y:position.y, z:position.z}, {x:velocity.x, y:velocity.y, z:velocity.z}];
+}
+
+//Lambert problem
+function lambert_solve(mu, r1, r2, dt, ot){
+//Mu is GM
+//r1 is the vector from sun to initial position
+//r2 is the vector from sun to final position
+//dt is the difference in times
+//ot is the orbit type (1 = prograde, 2 = retrograde)
+
+var tdiff = 1e8; //Set as an initial value for iteration
+var nrev = 0; //Number of revolutions
+var itermax = 2000; //Max number of iterations
+var tol = 1e-8; //Convergence tolerance
+var error1 = 0; //Error flag
+var r1mag = magnitude(r1); //Magnitude of initial position vector
+var r2mag = magnitude(r2); //Magnitude of final position vector
+var r1unit = normalize(r1); //Unit vector for r1
+var r2unit = normalize(r2); //Unit vector for r2
+
+// Cross product of r1 and r2 vectors (used for orbital geometry)
+var c12 = cross(r1, r2);
+var c12mag = magnitude(c12); //Magnitude of cross product
+var c12unit = normalize(c12); //Unit vector of cross product
+var nu = Math.acos(dot(r1, r2) / (r1mag * r2mag)); //True anomaly angle
+//var nu_before = nu;
+if(ot == 1){
+if(c12.z <= 0){
+nu = 2 * Pi - nu;    
+}    
+}
+if(ot == 2){
+if(c12.z >= 0){
+nu = 2 * Pi - nu;    
+}    
+}
+
+// Tangential unit vectors which are perpendicular to r1 and r2
+var tan1u = cross(c12unit, r1unit);
+var tan2u = cross(c12unit, r2unit);
+
+//Adjust vectors if angle is greater than pi
+if(nu >= Pi){
+tan1u = scale(tan1u, -1);
+tan2u = scale(tan2u, -1);
+}
+
+//Constants determined by the geometry of the problem
+var c = Math.sqrt(r1mag * r1mag + r2mag * r2mag - 2 * r1mag * r2mag * Math.cos(nu));
+var s = (r1mag + r2mag + c)/2; //Semi perimeter of triangle
+var t = Math.sqrt(8.0 * mu/Math.pow(s, 3)) * dt; //Time parameter based on the transfer time
+var q = Math.sqrt(r1mag * r2mag)/ s * Math.cos(nu * 0.5); //Lambert parameter
+
+//Adjust lambert parameter q based on the true anomaly
+if(nu <= Pi){
+q = Math.abs(q);
+}
+else{
+q = -Math.abs(q);
+}
+
+function sigma(u){
+var sigm = -2 * (Math.sqrt(u) * Math.sqrt(1 - u) - Math.asin(Math.sqrt(u)))/Math.pow(Math.sqrt(u), 3);
+var dsigma = -(u/Math.sqrt(1 - u) + (3 * Math.asin(Math.sqrt(u)))/Math.sqrt(u) - 3 / Math.sqrt((1 - u))) / Math.pow(u, 2);
+var d2sigma = (15.0 * Math.asin(Math.sqrt(u)) * Math.pow(Math.sqrt(1 - u), 3) - 15 * Math.sqrt(u) + 20 * Math.pow(Math.sqrt(u), 3) - 3 * Math.pow(Math.sqrt(u), 5)) / (2 * Math.pow(Math.sqrt(u), 7) * Math.pow(Math.sqrt((1-u)), 3));
+return [sigm, dsigma, d2sigma];
+}
+function time_derivatives(x, q, nrev){
+// This function calculates the time-of-flight equations and their derivatives.
+// Inputs:
+// x    = current x estimate
+// q    = Lambert parameter
+// nrev = number of revolutions
+// Outputs:
+// t   = calculated time-of-flight
+// td1 = time-of-flight first derivative
+// td2 = time-of-flight second derivative    
+var tol = 1e-8;
+var delt = 1e-1;
+var xx = x;
+
+//Handles special cases during near x = -1
+if(xx < -1){
+xx = Math.abs(xx) - 2;
+}
+else if(x == -1){
+xx = x + delt;
+}
+var e = Math.pow(xx, 2) - 1;
+
+
+if(xx == 1){
+
+var t = 4.0/3.0 * (1.0 - Math.pow(q, 3));
+var td1 = 4.0/5.0 * (Math.pow(q, 5) - 1.0);
+var td2 = td1 + 120.0/70.0 * (1.0 - Math.pow(q, 7));
+
+}
+else if(Math.abs(xx - 1.0) < tol){
+[sig1, dsig1, d2sig1] = sigma(-e);
+[sig2, dsig2, d2sig2] = sigma(-e * Math.pow(q, 2));
+var t = sig1 - Math.pow(q, 3) * sig2;
+var td1 = 2.0 * x * (Math.pow(q, 5.0) * dsig2 - dsig1);
+var td2 = td1 / x + 4.0 * Math.pow(x, 2) * (d2sig1 - Math.pow(q, 7.0) * d2sig2);
+}
+else{
+var y = Math.sqrt(Math.abs(e));
+var z = Math.sqrt(1.0 - Math.pow(q, 2) + Math.pow(q, 2) * Math.pow(x, 2));
+var f = y * (z - q * x);
+var u = -e;
+var g = (Math.pow(x, 2) - Math.pow(q, 2) * (-e)) / (x * z - q * (-e));
+
+if(e < 0){
+var d = Math.atan2(f, g) + Pi * nrev;}
+else{
+var d = Math.atanh(f / g);   
+}
+var t = 2.0 * (x - q * z - d / y) / e;
+var td1 = (3.0 * x * t + 4.0 * Math.pow(q, 3) * x / z - 4.0) / u;
+var td2 = (3.0 * t + 5.0 * x * td1 + 4.0 * Math.pow((q / z), 3) * (1.0 - Math.pow(q, 2))) / u;
+}
+return [t, td1, td2];
+}
+
+// Initial conditions for time derivatives
+var t0 = time_derivatives(0.0, q, nrev)[0];
+var t0_before = t0;
+if ((t0 - t) < 0.0){
+var signx = -1;  // Set sign for prograde case
+    }
+else{
+var signx = 1;   // Set sign for retrograde case
+    }
+
+var c1 = 0.5;
+var c2 = 0.03;
+
+if(signx == 1){
+var x0 = t0 * (t0 - t) / (4 * t);
+}
+
+else{
+var x01 = -(t - t0) / (t - t0 + 4.0);
+var x02 = -Math.sqrt((t - t0) / (t + 0.5 * t0));
+var  w_big = x01 + c1 * Math.sqrt(2.0 - nu / Pi);
+if(w_big >= 0){
+var x03 = x01;
+}
+else{
+var w_little = Math.sqrt(Math.sqrt(Math.sqrt(Math.sqrt(-w_big))));
+var x03 = x01 + w_little * (x02 - x01);
+}
+var lam = 1.0 + c1 * x03 * (4.0 / (4.0 - t - t0)) - c2 * Math.pow(x03, 2) * Math.sqrt(1.0 + x01);
+var x0 = lam * x03;
+}
+
+if (x0 <= -1){
+var error1 = 1;}
+
+var gamma = Math.sqrt(mu * s / 2.0); //Orbital mechanics constant
+//If there is no solution found, this is run
+if(error1 == 1){
+var v1 = {x:1e7, y:1e7, z:1e7};
+var v2 = {x:1e7, y:1e7, z:1e7};   
+}
+//If there is no error
+else{
+//Initialize iteration for finding the solution
+var iter = 0;
+var x = x0;
+
+while(Math.abs(tdiff) >= tol && iter <= itermax){
+        iter = iter + 1;
+        [t2, td1, td2] = time_derivatives(x, q, nrev);  // Calculate time derivatives
+        tdiff = t2 - t;  // Time difference
+        var x_new = x - 2.0 * tdiff * td1 / (2.0 * Math.pow(td1, 2) - tdiff * td2);  // Update x
+        x = x_new;
+    }
+
+    //If no solution is found
+
+    
+if (iter >= itermax){
+        // No solution found, set velocity vectors to large values
+        var v1 = {x:1.0e12, y:1.0e12, z:1.0e12};
+        var v2 = {x:1.0e12, y:1.0e12, z:1.0e12};
+    }
+
+else{
+
+// Calculate the velocity components
+
+
+if (c == 0){
+    var sig = 1.0;
+    var rho = 0.0;
+    var z = Math.abs(x);
+}
+else{
+var sig = 2.0 * Math.sqrt(r1mag * r2mag / Math.pow(c, 2)) * Math.sin(0.5 * nu);
+var rho = (r1mag - r2mag) / c;
+var z = Math.sqrt(1.0 + Math.pow(q, 2) * (Math.pow(x, 2) - 1.0));    
+}
+
+// Radial components of velocity
+
+var dum = gamma * ((q * z - x) - rho * (q * z + x)) / r1mag;
+var vr1 = scale(r1unit, dum);
+var dum = -gamma * ((q * z - x) + rho * (q * z + x)) / r2mag;
+var vr2 = scale(r2unit, dum);
+    
+// Tangential components of velocity
+
+var dum = gamma * sig * (z + q * x);
+var vt1 = scale(tan1u, dum / r1mag);
+var vt2 = scale(tan2u, dum / r2mag);
+var v1 = add(vr1, vt1);  // Final initial velocity vector
+var v2 = add(vr2, vt2);  // Final velocity vector
+    }
+}
+
+var vi = v1;
+var vf = v2;
+
+//return [vi, vf, nu_before];
+//return [vi, vf, t];
+return [vi, vf];
+
+}
+
+//Kepler approximation for future position
+
+function future_motion(mu, r, v, dt){
+var m = mu/Gravitational_Constant;
+var orbital_elements = cartesian_to_kepler(r, v, 0, m, {x:0, y:0, z:0}, "radian");
+var MA_motion = orbital_elements.MA;
+var TA_motion = orbital_elements.TA;
+var W_motion = orbital_elements.W;
+var IN_motion = orbital_elements.IN;
+var OM_motion = orbital_elements.OM;
+var EC_motion = orbital_elements.EC;
+var A_motion = orbital_elements.A;
+var Tp = -MA_motion/Math.sqrt(mu/Math.pow(A_motion, 3));
+var final_motion = kepler_to_cartesian(m, dt, Tp, EC_motion, A_motion, IN_motion, OM_motion, W_motion, "radian");
+return final_motion;
+}
+
+function numerical_future_motion(mu, r, v, dt){
+var r_new = {x:r.x, y:r.y, z:r.z};
+var v_new = {x:v.x, y:v.y, z:v.z};
+var a;
+var h = 1;
+var t = 0;
+var time_duration = dt;
+while(t < time_duration){ 
+a = scale(normalize(r_new), -mu/Math.pow(magnitude(r_new), 2));
+v_new.x = v_new.x + a.x * h;
+v_new.y = v_new.y + a.y * h;
+v_new.z = v_new.z + a.z * h;
+
+r_new.x = r_new.x + v_new.x * h;
+r_new.y = r_new.y + v_new.y * h;
+r_new.z = r_new.z + v_new.z * h;
+
+t+=h;	
+}
+
+return [r_new, v_new];
+}
+
+//var vix = 0;
+//var vix = lambert_solve(398600.4415, {x:304531.0076766, y:171848.0598058, z:27966.5729083}, {x:51272.6694138, y:50955.7039245, z:-18490.5963698}, 219530.0, 1)[0].z;
+/*
+function sendVariableToServer(variableValue) {
+  const data = { value: variableValue };
+  const jsonData = JSON.stringify(data);
+
+  return fetch('/save_data', { // Your server endpoint
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: jsonData
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Server returned ${response.status} ${response.statusText}`); // Throw error for non-2xx status
+    }
+    return response.json(); // Parse JSON response
+  })
+  .then(responseData => {
+    if (responseData && responseData.error) {
+      throw new Error(responseData.error); // Throw error if server returns an error message
+    }
+    return responseData; // Return the successful response data
+  })
+  .catch(error => {
+    console.error("Error saving variable:", error);
+    throw error; // Re-throw the error to be handled by the caller
+  });
+}
+
+function downloadData(data, filename, type) {
+    const dataStr = "data:" + type + ";charset=utf-8," + encodeURIComponent(data);
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", filename);
+    dlAnchorElem.click();
+}
+*/
+
+// Example usage:
+/*const myVariable = "This is the value to save.";
+
+sendVariableToServer(myVariable)
+  .then(result => {
+    console.log("Variable saved successfully:", result.message); // Access success message from server
+    alert("Variable saved!");
+  })
+  .catch(error => {
+    console.error("Error handling in the calling function:", error);
+    alert("Error saving variable. Check the console for details.");
+    //Handle the error as needed (e.g., display a user-friendly message)
+  });
+
+
+// Example with input from a text box:
+function saveFromTextBox() {
+  const textBoxValue = document.getElementById("myVariable").value;
+  sendVariableToServer(textBoxValue)
+  .then(result => {
+    console.log("Variable saved successfully:", result.message); // Access success message from server
+    alert("Variable saved!");
+  })
+  .catch(error => {
+    console.error("Error handling in the calling function:", error);
+    alert("Error saving variable. Check the console for details.");
+    //Handle the error as needed (e.g., display a user-friendly message)
+  });
+}
+*/
+//var vix = lambert_solve(398600.4415, {x:304531.0076766, y:171848.0598058, z:27966.5729083}, {x:51272.6694138, y:50955.7039245, z:-18490.5963698}, 219530.0, 1)[2];
+
+//Viewing
+/*
+var shiftright = -3.2/2.5 * boxScaled;
+var shiftup = 2.5/2.5 * boxScaled;
+
+var viewingPosition = {x: -5e-1*boxScale + shiftright, y:1e-1*boxScale + shiftup, z:5e-1*boxScale};
+var viewingAngle = {x:Pi/180 *  - 5, y:Pi/180 *  - 30, z:0};
+var displaySurfacePosition = {x: 5e-1*boxScale + shiftright, y: -10e-1*boxScale + shiftup, z:30e-1*boxScale};
+var box = {width:1e-1*boxScale, height:1e-1*boxScale, depth:1e-1*boxScale}
+*/
+
+//CSV conertor for tables
+
+function CSV_convertor(data, header){
+var CSV =  header[0];
+var h = 1;
+while(h < header.length){
+CSV = CSV + "," + header[h];
+h++;
+}
+var rows = 0;
+while(rows < data.length){
+CSV = CSV + "\n" + data[rows];
+var columns = 0;
+rows++;  
+}
+return CSV;
+}
+
+function momentum_transfer(v1, v2, m, M, beta){
+var U = v1;
+var E = normalize(scale(U, -1));
+var M_delta_v =  add(scale(U, m), scale(E, m * (beta - 1) * dot(E, U)));
+var delta_v = scale(M_delta_v, 1/M);
+var v_new = add(delta_v, v2);
+return v_new;
+}
+
+
+//var shiftright = -3.2/2.5 * boxScaled;
+var shiftright = -1.2/2.5 * boxScaled;
+//var shiftup = 7.5/2.5 * boxScaled;
+var shiftup = 7.2/2.5 * boxScaled;
+
+var viewingPosition = {x: -5e-1*boxScale + shiftright, y:1e-1*boxScale + shiftup, z:5e-1*boxScale};
+var viewingAngle = {x:Pi/180 *  - 5, y:Pi/180 *  - 30, z:0};
+var displaySurfacePosition = {x: 5e-1*boxScale + shiftright, y: -18e-1*boxScale + shiftup, z:28e-1*boxScale};
+var box = {width:1.2e-1*boxScale, height:1.2e-1*boxScale, depth:1.2e-1*boxScale}
+box.width = Math.cbrt(14e-27);
+box.height = Math.cbrt(14e-27);
+box.depth = Math.cbrt(14e-27);
+
+//Interactive
+
+var elements = ["helium","neon","argon","krypton","xenon"];
+var element = elements[0];
+var radii = [31e-12,38e-12,71e-12,87e-12,115e-12];
+var masses = [6.6465e-27, 3.35e-26, 6.63e-26, 1.39e-25, 2.18e-25];
+var colors = [{R:10, G:100, B:80},{R:200, G:80, B:100},{R:10, G:100, B:180},{R:100, G:200, B:220},{R:100, G:100, B:220}];
+
+
+var temperature_original = 298.15;
+
+var time_pressure = 0;
+
+//Radius of helium is 31 pm, neon is 38 pm, argon is 71 pm, krypton is 87 pm, xenon is 115 pm
+
+
+//Mass of helium atom is  6.6465e-27, neon is 3.35e-26, argon is 6.63e-26, krypton is 1.39e-25, xenon is 2.18e-25
+
+
+
+//Important variables
+var time = 0;
+var position = [];
+var velocity = [];
+var earlier_position = [];
+var earlier_velocity = [];
+var force = [];
+var mass = [];
+var radius = [];
+var color = [];
+var charge = [];
+var angular_position = [];
+var angular_velocity = [];
+var torque = [];
+var moment_of_Inertia = [];
+var timeStep = 1e-13;
+var numSteps = 1; 
+var numberOfElements = 300;
+var Gravitational_Force = [];
+var Coulomb_Force = [];
+var van_der_Waals = [];
+var drag = []; 
+var small_objects = [];
+var trajectory = [];
+var calculate_trajectory = false;
+var incrementor = 0;
+var increment_step = 1;
+var t1 = 3;
+var increment_change = 10;
+var time_to_increment_conversion = 1/(timeStep * numSteps);
+var increment1 = 4 * 365.25 * 24 * 3600 * time_to_increment_conversion;
+var increment2 = 12 * 365.25 * 24 * 3600 * time_to_increment_conversion;
+var time_measure_stop = 0;
+var t_collide = 365.25 * 24 * 3600 * 7;
+var t_start = 365.25 * 24 * 3600 * 6;
+var m = 350;
+var beta = 1;
+var t_h = 1;
+var v_delta = 0;
+var ot_satelite = 1;
+var v_f = {x:0, y:0, z:0};
+var truth_once = false;
+//Calculates precession of mercury
+var calculate_perihelion = false;
+var perihelion_of_mercury_list = [];
+var distance_list = [];
+var position_of_mercury_list = [];
+var precession_of_mercury = {x:0, y:0, z:0};
+var angle_shift = 0;
+var perihelion_truth = false;
+var number_of_perihelions = 0;
+var t1 = 0;
+var t2 = 500;
+//Rocket
+var Thrust_Magnitude = 0.05;
+var Thrust;
+//Sets origin
+var center;
+var use_moving_object = false;
+var center_number = 3;
+//Integration methods
+//"Euler, Runge-Kutta, Semi-implicit Euler, Verlet, Leapfrog"
+var integration = "Semi-implicit Euler";
+
+//Consider each force
+var consider__newtonian_gravity = false;// was not used before 12:01 PM - 12:02 PM February 20 2025 changed on July 27 11:39 PM
+var consider_Coulomb = false;
+var consider_Earth_Gravity = false;
+var consider_van_der_Waals = false;
+var consider_drag = false;
+var consider_friction = false;
+//var consider_general_relativity = true; was used before 12:01 PM - 12:02 PM February 20 2025
+var consider_general_relativity = false;
+if(consider_general_relativity == true){consider__newtonian_gravity = false;}
+//Numbers in use
+var elasticity = 1;
+var wallElasticity = 1;
+var µ_s = 0;
+var µ_k = 0;
+var frictionStop = 0.0000000000001;
+var forceStop = 0.0000000000001;
+var fluid_density = 1.225; //Density of air
+var drag_coefficient = 0.55; //Drag coefficient of a tennis ball
+var density = [];
+
+//Walls
+var walls = true;
+
+//Collision types are "Standard" and "General Rigid Body".
+var collision_method = "Standard";
+
+//Using rotation or not
+var consider_rotation = false;
+
+//Finding collisions or not
+var consider_collisions = true;
+
+//Useful Variables
+var pvelocity = [];
+var change = [];
+var n;
+var arrowAngle = Pi/8;
+var deformation = 0.01;
+var half1 = [];
+var half2 = [];
+var icosphereRecursion = 4;
+var number_of_slices = 20;
+var number_of_stacks = 20;
+var number_of_subdivisions  = 1;
+var pvelocity = [];
+var calculate_energy = false;
+//Orbital periods
+var orbital_periods = [];
+var three_positions = [];
+var perihelions = [];
+var test_distance_multiple_number = 3;
+var distance_multiple = [];
+var sorted_distance_multiple = [];
+//Distance plot
+var plot_distance = false;
+var plot_corner = {x:2750, y:1000, z:0};
+var x_axis_length = 1000;
+var y_axis_length = 750;
+var time_length = 10; //In Julian Years
+var maximum_distance = 3; //In Astronomical units
+
+//Maxwell-Boltzmann distribution
+var find_Maxwell_Boltzmann_distribution = true;
+var numberOfGroups = 50;
+var maxVelocity = 4000;
+var totalLength = 1100;
+var totalHeight = 750;
+var maxProbability = 0.0045;
+var separation_of_x_axis_labels = 500;
+var separation_of_y_axis_labels = 0.001;
+var start_temperature = temperature_original;
+var change_in_momentum_due_to_wall_collisions = 0;
+var pressure;
+
+//Vector fields;
+var vectorField = [];
+var gravitationalField = [];
+var ElectricField = [];
+var fieldPoints = 0;
+var xOfField = 20;
+var yOfField = 20;
+var gridX = [];
+var gridY = [];
+var posX = [];
+var posY = [];
+var vectorPosition = [];
+var equalFieldLines = false;
+var showField = false;
+var showArrowEnd = true;
+
+//Surrounding electric field lines
+var linesSurround = [];
+var linesStart = [];
+var surfacePoints = 10;
+var numberOfLines =  4000;
+var scaleLines = 1;
+var changer = 0.0002;
+var fieldAtPoint = [];
+var showSurroundingField = false;
+
+//Calculate amount of each force
+var calculateForce = false;
+
+//Path
+var trailColor = [];
+var trail_thickness = 4;
+var showPath = false;
+var path = [];
+var trail_rate = 20;
+var path_length = 300000;//30000;
+var distance_with_time_table = [];
+var all_shown = true;
+var paths_shown = [];
+//Closer objects in front
+var sorted_by_distance = [];
+
+//Axes
+var lengthOfAxisX = box.width;
+var lengthOfAxisY = box.height;
+var lengthOfAxisZ = box.depth;
+
+var distance_between_bennu_and_earth;
+var distance_between_bennu_and_earth_in_astronomical_units;
+var distance_bennu_saved = [];
+var sorted_distance_bennu_list = [];
+var rounded_distance_between_bennu_and_earth_in_astronomical_units;
+
+function Random(a, b){
+return Math.random() * (b - a) +  a;
+}
+function RandomSign(){
+return 2 * (Math.round(Random(0, 1)) - 0.5);
+}
+
+radius = [695700e3, 2440e3, 6052e3, 6371e3, 1738.1e3, 3390e3, 69911e3, 58232e3, 25362e3, 24622, 100, 466, 245, 0.14 * 1000/2, 100]
+mass = [1988410e24,3.285e23,4.867e24,5.972e24,7.347e22,6.417e23,1.898e27,5.685e26,8.681e25,1.024e26, 2.2e8, 4/3 * Pi * Math.pow(radius[10], 3) * 2500,77e9, 2.2e8, 500];
+
+color[0] = {R:253,G:184,B:19};
+color[1] = {R:183,G:184,B:185};
+color[2] = {R:165,G:124,B:27};
+color[3] = {R:10,G:200,B:255};
+color[4] = {R:194,G:197,B:204};
+color[5] = {R:244,G:138,B:54};
+color[6] = {R:227,G:220,B:203};
+color[7] = {R:206,G:184,B:184};
+color[8] = {R:147,G:205,B:241};
+color[9] = {R:91,G:93,B:223};
+color[10] = {R:147, G:146, B:140};
+color[11] ={R:150, G:150, B:180};
+color[12] ={R:255, G:0, B:0};
+//color[13] ={R:50, G:255, B:100};
+
+var position_object_2025_BB2 = kepler_to_cartesian(mass[0], 2460609.5 * 24 * 3600, 2460719.129522650968 * 24 * 3600, 4.337941702935280E-01, 2.595230246771552E+011, 3.361299368369536E+00, 1.368163428897332E+02, 8.686356644901673E+00, "degree")[0];
+var velocity_object_2025_BB2 = kepler_to_cartesian(mass[0], 2460609.5 * 24 * 3600, 2460719.129522650968 * 24 * 3600, 4.337941702935280E-01, 2.595230246771552E+011, 3.361299368369536E+00, 1.368163428897332E+02, 8.686356644901673E+00, "degree")[1];
+
+// y and z are swapped
+
+//Not exactly origin, a bit off. Year length is around 10 days off when the sun is on the origin
+position[0] = {x:-9.274138582715912e8, z:2.797231228542380e7, y:-6.938667521052255e8};
+velocity[0] = {x:1.178124725173098e1, z:-1.797380698153302e-1, y:-7.659535421181424e0};
+
+position[1] = {x:-8.350464817759797e9, z:-4.940084663403556e9, y:-6.981808859761326e10};
+velocity[1] = {x:3.867481850839492e4, z:-3.768644313498624e3, y:-2.726689023789707e3};
+
+position[2] = {x:6.077593692266054E+010, z:-4.763497232388057E+09, y:-9.033669593108977E+010};
+velocity[2] = {x:2.862695354401760e4,  z:-1.380278359205043e3, y:1.972639617541650e4};
+
+position[3] = {x:1.241933284810357e11, z:2.242042902170122e7 , y:7.969637695079865e10};
+velocity[3] = {x:-1.656841714224306e4, z:-7.511984757915258e-1, y:2.495043215822489e4};
+
+position[4] = {x:1.238809963313736e11, z:4.799648621875048e7, y:7.994313203952612e10};
+velocity[4] ={x:-1.721301847205845e4, z:-6.184783956105022e1, y:2.421314318126728e4};
+
+position[5] = {x:5.393017685312316E+010,  z:3.355802259571001E+09,  y:2.223187226042356E+011};
+velocity[5] ={x: -2.260076352870374E+04,  z:7.188562151203013E+2,  y:7.839428034308592E+03};
+
+position[6] = {x:2.310545361479115E+011, z:-8.155884834465027E+09, y: 7.199883510272187E+011};
+velocity[6] ={x:-1.258913184251029E+04, z: 2.625525997374487E2, y: 4.615835039207592E+03};
+
+position[7] = {x:1.406270065588180E+012, z:-5.043797017427860E+010, y:-3.193541846549748E+011};
+velocity[7] ={x:1.600798696522330E+03, z:-2.267686552365489E02, y:9.399218396525690E+03};
+
+position[8] = {x:1.692815155454687E+012,  z:-1.306839979065168E+010, y:2.386206938652314E+012};
+velocity[8] ={x:-5.604459613910256E+03,  z:8.577026115016628E+01, y:3.622882337400259E+03};
+
+position[9] = {x:4.468539607247522E+012, z:-1.003618922006173E+011, y:-1.272485544541516E+011};
+velocity[9] = {x:1.188617097739066E+2, z:-1.153540899761756E+2, y:5.465255531518057E+3};
+/*
+position[10] = {x:-1.341113055713957E+011, z:-3.063243924076825E+09, y:3.108076635123951E+011}
+velocity[10] = {x:-1.625070304588469E+04,  z: -5.434568878176567e2,  y:-6.533810826602001E2}
+*/
+//Coordinate system shifted to barycentric
+/*
+position_object_2025_BB2 = add(position_object_2025_BB2, position[0]);
+
+position[10] = position_object_2025_BB2;
+velocity[10] = velocity_object_2025_BB2;
+*/
+/*
+positionX_keplerian = position[10].x;
+positionY_keplerian = position[10].y;
+positionZ_keplerian = position[10].z;
+
+velocityX_keplerian = velocity[10].x;
+velocityY_keplerian = velocity[10].y;
+velocityZ_keplerian = velocity[10].z;
+*/
+/*
+position[11] = {x:1.516727805991891E+011, z: -2.929648518658011E+09, y:-2.342089886125857E+010};
+velocity[11] = {x:-1.160868528214558E+03,  z: 3.208690436837809E+03,  y:3.033212570160781E+04};
+*/
+/*
+position[11] = {x:1.461255433414259E+011, z:-1.300686053253830E+10, y:1.656598294414988E+11};
+velocity[11] = {x:-2.494422742947101E+04, z:6.746219956324082E02, y: 7.657406270281314E+03};
+*/
+/*
+positionX_cartesian = position[11].x;
+positionY_cartesian = position[11].y;
+positionZ_cartesian = position[11].z;
+
+velocityX_cartesian = velocity[11].x;
+velocityY_cartesian = velocity[11].y;
+velocityZ_cartesian = velocity[11].z;
+*/
+/*
+var BB2_orbital_elements = cartesian_to_kepler(position[11], velocity[11], 0, mass[0], position[0], "degree");
+*/
+
+//YR4
+position[10] = {x:1.401564751149451E+011, z:8.554501427040195E+09, y:1.053198964834786E+010};
+velocity[10] = {x:-1.390101025874792E+04, z:-7.851685006960718E02, y:3.644022608513909E+04};
+//Apophis
+//position[10] = {x:-1.525685396835892E+011, y:-3.336684741397122E+010, z:-1.815345685870804E+09};
+//velocity[10] = {x:9.604241348857721E+03, y:-2.559343303620942E+04, z:1.592247640923782E+03};
+
+
+
+//Satelite for asteroid deflection
+//var transfer_time = 365.25 * 24 * 3600 * 1/365.25;
+/*
+var transfer_time = 365.25 * 24 * 3600 * 3.99;
+position[11] = add(position[3], {x:-6.4e6 + -1e10, y:0, z:0});
+var yr4_nextposition = numerical_future_motion(Gravitational_Constant * mass[0], {x:subtract(position[10], position[0]).x, y:subtract(position[10], position[0]).y, z:subtract(position[10], position[0]).z}, velocity[10], transfer_time)[0];
+
+//var velocity_to_go = lambert_solve(Gravitational_Constant * mass[0], subtract(position[11], position[0]), position[10], transfer_time, 1)[0];
+
+var velocity_to_go = lambert_solve(Gravitational_Constant * mass[0], subtract(position[11], position[0]), yr4_nextposition, transfer_time, 1)[0];
+
+velocity[11] = velocity_to_go;
+*/
+//Coordinates of y, z flipped
+/*
+var object_OM = 214.347;
+var object_W = 0.079;
+var object_EC = 0.390;
+var object_A = 1.65 * astronomical_unit_to_meters_conversion_factor;
+var object_IN = 10.688;
+var object_TA = 194.619;
+var object_MA = 180/Pi * (Math.atan2(Math.sqrt(1 - Math.pow(object_EC, 2)) * Math.sin(object_TA * Pi/180), object_EC + Math.cos(object_TA * Pi/180)) - object_EC * Math.sqrt(1 - Math.pow(object_EC, 2)) * Math.sin(object_TA * Pi/180)/(1 + object_EC * Math.cos(object_TA * Pi/180)));
+object_MA = (object_MA + 360) % (360);
+var object_Tp = - Pi/180 * object_MA/Math.sqrt(Gravitational_Constant * mass[0]/Math.pow(object_A, 3));
+
+position[11] = kepler_to_cartesian(mass[0], 0, object_Tp, object_EC, object_A, object_IN, object_OM, object_W, "degree")[0];
+velocity[11] = kepler_to_cartesian(mass[0], 0, object_Tp, object_EC, object_A, object_IN, object_OM, object_W, "degree")[1];
+
+var orbital_elements_of_lambert_object = cartesian_to_kepler(position[11], velocity[11], 0, mass[0], {x:0, y:0, z:0}, "degree");
+var transfer_time_lambert = 365.25 * 24 * 3600 * 0.5;
+position[12] = add(position[3], {x:50e7, y:0, z:0}); 
+velocity[12] = lambert_solve(Gravitational_Constant * mass[0], position[12], numerical_future_motion(Gravitational_Constant * mass[0], position[11], velocity[11], transfer_time_lambert)[0], transfer_time_lambert, 1)[0]; 
+
+position[11] = add(position[11], position[0]);
+position[12] = add(position[12], position[0]);
+*/
+
+/*
+
+var yz = 0;
+while(yz < numberOfElements){
+position[yz] = {x:position[yz].x, y:position[yz].z, z:position[yz].y};     
+velocity[yz] = {x:velocity[yz].x, y:velocity[yz].z, z:velocity[yz].y};     
+yz++;
+}
+*/
+/*
+var position_satelite = subtract(position[3], position[0]);
+var velocity_satelite = velocity[3];
+
+var closest_bennu = {distance:magnitude(subtract(position[10], position[3])), time:0};
+//var closest_satelite = {distance:magnitude(subtract(position[11], position[10])), time:0};
+*/
+var a = 0;
+while(a < numberOfElements){
+density[a] = 2600;
+//Radius of helium is 31 pm, neon is 38 pm, argon is 71 pm, krypton is 87 pm, xenon is 115 pm
+radius[a] = 31e-12;
+
+separation = 0.01;
+
+//Mass of helium atom is  6.6465e-27, neon is 3.35e-26, argon is 6.63e-26, krypton is 1.39e-25, xenon is 2.18e-25
+mass[a] = 6.6465e-27;
+charge[a] =  0;
+force[a] = {x:0, y:0, z:0};
+position[a] = {x:Random(box.width/4 + radius[a], box.width * 3/4 - radius[a]), y:Random(box.width/4 + radius[a], box.width * 3/4 - radius[a]), z:Random(box.width/4 + radius[a], box.width * 3/4 - radius[a])};
+color[a] = {R:10, G:100,B:80};
+
+separation = 0;
+
+charge[a] = 0;
+force[a] = {x:0, y:0, z:0};
+
+
+var brightness = 1;
+
+color[a] = {R:color[a].R * brightness, G:color[a].G * brightness, B:color[a].B * brightness};
+// Color of ball is half1 = {R:100, G:20, B:200}, half2 = {R:180, G:20, B:100}
+half1[a] = {R:255*Math.round(Random(0, 1)),G:255*Math.round(Random(0, 1)),B:255*Math.round(Random(0, 1))};
+half2[a] = {R:255*Math.round(Random(0, 1)),G:255*Math.round(Random(0, 1)),B:255*Math.round(Random(0, 1))};
+
+var vTot =  Math.sqrt(3 * start_temperature * Boltzmann_Constant/mass[a]); 
+velocity[a] = scale({x:vTot * RandomSign(), y:vTot * RandomSign(), z:vTot * RandomSign()}, 1/Math.sqrt(3));
+
+angular_position[a] = {x:0, y:0, z:0};
+angular_velocity[a] = {x:0, y:0, z:0}
+ 
+angular_position[3] = {x:0, y:0, z:0}
+torque[a] = {x:0, y:0, z:0};
+moment_of_Inertia[a] = 2/5 * mass[a] * Math.pow(radius[a], 2);
+
+
+//Closer objects are in front
+sorted_by_distance[a] = {position:{x:0, y:0, z:0}, angular_position: {x:0, y:0, z:0}, radius:0, color:{R:0, G:0, B:0}, half1:{R:0, G:0, B:0}, half2:{R:0, G:0, B:0}, distance:0};
+
+//Trail
+path[a] = {x:[], y:[], z:[]};
+trailColor[a] = {R:color[a].R, G:color[a].G, B:color[a].B};
+
+three_positions[a] = [];
+perihelions[a] = [];
+distance_multiple[a] = [];
+sorted_distance_multiple[a] = [];
+a++;    
+}
+
+//Viewing
+function perspective(A, C, Angle, E){
+//A is the position of the object, C is the position of the viewer, Angle is the angle of the camera, and E is the position of the display surface
+var cosine = {x:Math.cos(Angle.x), y:Math.cos(Angle.y), z:Math.cos(Angle.z)};
+var sine = {x:Math.sin(Angle.x), y:Math.sin(Angle.y), z:Math.sin(Angle.z)};
+var p = subtract(A, C);
+var d = {x:cosine.y * (sine.z * p.y +  cosine.z * p.x) - sine.y * p.z, y:sine.x * (cosine.y * p.z +  sine.y * (sine.z * p.y +  cosine.z * p.x)) +  cosine.x * (cosine.z * p.y - sine.z * p.x), z:cosine.x * (cosine.y * p.z +  sine.y * (sine.z * p.y +  cosine.z * p.x)) - sine.x * (cosine.z * p.y - sine.z * p.x)};
+//B is the mapped coordinate. In a pinhole camera, they are flipped, so the sines are reversed to make it the correct orientation.
+var b = {x: - 1 * (E.z/d.z  *  d.x +  E.x), y: - 1 * (E.z/d.z  *  d.y +  E.y)};
+
+return b;
+}
+
+//Shapes and curves
+function trail(n, thickness, r, g, b){
+var trailAllDimensions = [];
+trailAllDimensions[n] = []
+for(var trails = 0; trails < path[n].x.length; trails++ )
+{trailAllDimensions[n][trails] = {x:path[n].x[trails], y:path[n].y[trails], z:path[n].z[trails]};}
+for(var lines = 1; lines < path[n].x.length; lines++ )
+{
+c.strokeStyle = `rgb(
+		${r}, 
+		${g}, 
+		${b})`
+//This makes sure that there aren't any arbitrary lines formed by points in perspective
+if(Math.sqrt(Math.pow(Sizing * perspective(trailAllDimensions[n][lines - 1], viewingPosition, viewingAngle, displaySurfacePosition).x - Sizing * perspective(trailAllDimensions[n][lines], viewingPosition, viewingAngle, displaySurfacePosition).x, 2) +  Math.pow(Sizing * perspective(trailAllDimensions[n][lines - 1], viewingPosition, viewingAngle, displaySurfacePosition).y - Sizing * perspective(trailAllDimensions[n][lines], viewingPosition, viewingAngle, displaySurfacePosition).y, 2)) < 10000){
+c.lineWidth = thickness;
+c.beginPath();
+c.moveTo(Sizing * perspective(trailAllDimensions[n][lines - 1], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(trailAllDimensions[n][lines - 1], viewingPosition, viewingAngle, displaySurfacePosition).y)
+c.lineTo(Sizing * perspective(trailAllDimensions[n][lines], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(trailAllDimensions[n][lines], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();}
+}
+}
+function UV_sphere(position, radius, axis, angle, slices, stacks){
+var vertices = [];
+var faces = [];
+var sortFaces = [];
+var A;
+var B;
+var C;
+var D;
+var E;
+var phi = [];
+var theta = [];
+var c0 = [];
+var c1 = [];
+var c0new = [];
+var c1new = [];
+var d0 = [];
+var d1 = [];
+var e0 = [];
+var e1 = [];
+var e2 = [];
+var e3 = [];
+vertices.push({x:position.x, y:position.y +  radius, z:position.z})
+
+A = 0;
+while(A < stacks - 1){
+phi[A] = Pi  *  (A +  1)/(stacks);
+
+B = 0;
+while(B < slices){
+theta[B] = 2  *  Pi  *  B/slices;
+vertices.push({x:position.x +  radius * Math.sin(phi[A]) * Math.cos(theta[B]), y:position.y +  radius * Math.cos(phi[A]), z:position.z +  radius * Math.sin(phi[A]) * Math.sin(theta[B])});
+B++;}
+A++;}
+
+vertices.push({x:position.x, y:position.y - radius, z:position.z});
+
+var rotateVertices = 0;
+while(rotateVertices < vertices.length){
+vertices[rotateVertices] = add(rotate(subtract(vertices[rotateVertices], position), axis, angle), position);
+rotateVertices ++;
+}
+
+C = 0;
+while(C < slices){
+c0[C] = C + 1;
+c1[C] = (C + 1) % slices + 1;
+
+faces.push([vertices[0], vertices[c1[C]], vertices[c0[C]]])
+
+c0new[C] = C + slices  *  (stacks - 2) + 1;
+c1new[C] = (C + 1) % slices + slices  *  (stacks - 2) + 1;
+
+faces.push([vertices[vertices.length - 1], vertices[c1new[C]], vertices[c0new[C]]])
+
+
+++ C;}
+
+D = 0;
+while(D < stacks - 2){
+d0[D] = D  *  slices + 1; 
+d1[D] = (D + 1)  *  slices + 1;
+E = 0;
+while(E < slices){
+e0[E] = d0[D] + E;
+e1[E] = d0[D] + (E + 1) % slices;
+e2[E] = d1[D] + (E + 1) % slices;
+e3[E] = d1[D] + E;
+
+faces.push([vertices[e0[E]], vertices[e1[E]], vertices[e2[E]], vertices[e3[E]]]);
+
+E++;}
+D++;}
+
+
+
+var facesSort = 0;
+while(facesSort < faces.length){
+if(faces[facesSort].length == 3){
+sortFaces[facesSort] = {face:faces[facesSort], distance:magnitude(subtract(viewingPosition, scale(add(add(faces[facesSort][0], faces[facesSort][1]), faces[facesSort][2]), 1/3)))};}
+if(faces[facesSort].length == 4){
+    sortFaces[facesSort] = {face:faces[facesSort], distance:magnitude(subtract(viewingPosition, scale(add(add(add(faces[facesSort][0], faces[facesSort][1]), faces[facesSort][2]), faces[facesSort][3]), 1/4)))};}
+facesSort++;
+}
+sortFaces.sort(function(a, b){return b.distance - a.distance;});
+
+var drawFaces = 0;
+while(drawFaces < faces.length){
+if(sortFaces[drawFaces].face.length == 3){
+
+    c.beginPath();
+c.moveTo(Sizing * perspective(sortFaces[drawFaces].face[0], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[0], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawFaces].face[1], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[1], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawFaces].face[2], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[2], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+}
+if(sortFaces[drawFaces].face.length == 4){
+    c.beginPath();
+c.moveTo(Sizing * perspective(sortFaces[drawFaces].face[0], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[0], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawFaces].face[1], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[1], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawFaces].face[2], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[2], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawFaces].face[3], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[3], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+}
+
+drawFaces++;
+}
+}
+function Patterned_UV_sphere(position, radius, axis, angle, slices, stacks, half1, half2){
+    var vertices = [];
+var faces = [];
+var sortFaces = [];
+var color = [];
+var A;
+var B;
+var C;
+var D;
+var E;
+var phi = [];
+var theta = [];
+var c0 = [];
+var c1 = [];
+var c0new = [];
+var c1new = [];
+var d0 = [];
+var d1 = [];
+var e0 = [];
+var e1 = [];
+var e2 = [];
+var e3 = [];
+vertices.push({x:position.x, y:position.y +  radius, z:position.z})
+
+A = 0;
+while(A < stacks - 1){
+phi[A] = Pi  *  (A +  1)/(stacks);
+
+B = 0;
+while(B < slices){
+theta[B] = 2  *  Pi  *  B/slices;
+vertices.push({x:position.x +  radius * Math.sin(phi[A]) * Math.cos(theta[B]), y:position.y +  radius * Math.cos(phi[A]), z:position.z +  radius * Math.sin(phi[A]) * Math.sin(theta[B])});
+B++;}
+A++;}
+
+vertices.push({x:position.x, y:position.y - radius, z:position.z});
+
+
+
+
+C = 0;
+while(C < slices){
+c0[C] = C + 1;
+c1[C] = (C + 1) % slices + 1;
+
+faces.push([vertices[0], vertices[c1[C]], vertices[c0[C]]])
+
+c0new[C] = C + slices  *  (stacks - 2) + 1;
+c1new[C] = (C + 1) % slices + slices  *  (stacks - 2) + 1;
+
+faces.push([vertices[vertices.length - 1], vertices[c1new[C]], vertices[c0new[C]]])
+
+
+++ C;}
+
+D = 0;
+while(D < stacks - 2){
+d0[D] = D  *  slices + 1; 
+d1[D] = (D + 1)  *  slices + 1;
+E = 0;
+while(E < slices){
+e0[E] = d0[D] + E;
+e1[E] = d0[D] + (E + 1) % slices;
+e2[E] = d1[D] + (E + 1) % slices;
+e3[E] = d1[D] + E;
+
+faces.push([vertices[e0[E]], vertices[e1[E]], vertices[e2[E]], vertices[e3[E]]]);
+
+E++;}
+D++;}
+
+var colorNumber = 0;
+while(colorNumber < faces.length){
+    
+    if(faces[colorNumber].length == 3){
+        if(scale(add(add(faces[colorNumber][0], faces[colorNumber][1]), faces[colorNumber][2]), 1/3).y > position.y){
+color[colorNumber] = half1;}     
+else{color[colorNumber] = half2;}
+    }
+if(faces[colorNumber].length == 4){
+    if(scale(add(add(add(faces[colorNumber][0], faces[colorNumber][1]), faces[colorNumber][2]), faces[colorNumber][3]), 1/4).y > position.y){
+color[colorNumber] = half1;}     
+else{color[colorNumber] = half2;}
+}
+
+colorNumber++;
+}
+
+var rotateSides = 0;
+while(rotateSides < faces.length){
+    if(faces[rotateSides].length == 3){
+faces[rotateSides][0] = add(rotate(subtract(faces[rotateSides][0], position), axis, angle), position);
+faces[rotateSides][1] = add(rotate(subtract(faces[rotateSides][1], position), axis, angle), position);
+faces[rotateSides][2] = add(rotate(subtract(faces[rotateSides][2], position), axis, angle), position);
+    }
+if(faces[rotateSides].length == 4){
+faces[rotateSides][0] = add(rotate(subtract(faces[rotateSides][0], position), axis, angle), position);
+faces[rotateSides][1] = add(rotate(subtract(faces[rotateSides][1], position), axis, angle), position);
+faces[rotateSides][2] = add(rotate(subtract(faces[rotateSides][2], position), axis, angle), position);
+faces[rotateSides][3] = add(rotate(subtract(faces[rotateSides][3], position), axis, angle), position);
+
+}
+rotateSides++;
+}
+
+var facesSort = 0;
+while(facesSort < faces.length){
+if(faces[facesSort].length == 3){
+sortFaces[facesSort] = {face:faces[facesSort], color:color[facesSort], distance:magnitude(subtract(viewingPosition, scale(add(add(faces[facesSort][0], faces[facesSort][1]), faces[facesSort][2]), 1/3)))};}
+if(faces[facesSort].length == 4){
+    sortFaces[facesSort] = {face:faces[facesSort], color:color[facesSort], distance:magnitude(subtract(viewingPosition, scale(add(add(add(faces[facesSort][0], faces[facesSort][1]), faces[facesSort][2]), faces[facesSort][3]), 1/4)))};}
+facesSort++;
+}
+sortFaces.sort(function(a, b){return b.distance - a.distance;});
+
+var drawFaces = 0;
+while(drawFaces < faces.length){
+    c.fillStyle = `rgb(
+		${sortFaces[drawFaces].color.R}, 
+		${sortFaces[drawFaces].color.G}, 
+		${sortFaces[drawFaces].color.B})`
+
+if(sortFaces[drawFaces].face.length == 3){
+    c.beginPath();
+c.moveTo(Sizing * perspective(sortFaces[drawFaces].face[0], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[0], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawFaces].face[1], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[1], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawFaces].face[2], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[2], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+}
+if(sortFaces[drawFaces].face.length == 4){
+    c.beginPath();
+c.moveTo(Sizing * perspective(sortFaces[drawFaces].face[0], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[0], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawFaces].face[1], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[1], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawFaces].face[2], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[2], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawFaces].face[3], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawFaces].face[3], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+}
+
+drawFaces++;
+}}
+function icosphere(position, radius, axis, angle, recursionLevel){
+var icosahedron = [];
+var t = (1 +  Math.sqrt(5))/2;
+
+icosahedron.push({x: - 1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x: - 1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+
+var faces = [];
+function icosahedronTriangles(a, b, c){
+
+
+faces.push({A:icosahedron[a], B:icosahedron[b], C:icosahedron[c]});
+}
+
+icosahedronTriangles(0, 11, 5);
+icosahedronTriangles(0, 5, 1);
+icosahedronTriangles(0, 1, 7);
+icosahedronTriangles(0, 7, 10);
+icosahedronTriangles(0, 10, 11);
+
+icosahedronTriangles(1, 5, 9);
+icosahedronTriangles(5, 11, 4);
+icosahedronTriangles(11, 10, 2);
+icosahedronTriangles(10, 7, 6);
+icosahedronTriangles(7, 1, 8);
+
+icosahedronTriangles(3, 9, 4);
+icosahedronTriangles(3, 4, 2);
+icosahedronTriangles(3, 2, 6);
+icosahedronTriangles(3, 6, 8);
+icosahedronTriangles(3, 8, 9);
+
+icosahedronTriangles(4, 9, 5);
+icosahedronTriangles(2, 4, 11);
+icosahedronTriangles(6, 2, 10);
+icosahedronTriangles(8, 6, 7);
+icosahedronTriangles(9, 8, 1);
+
+function middleToSphere(a, b){
+return add(scale(normalize(subtract(scale(add(a, b), 0.5), position)), radius), position);
+}
+
+var A;
+var B;
+var C;
+
+var i = 0;
+while(i < recursionLevel){
+var j = 0;
+var faces2 = [];
+
+while(j < faces.length){
+A = middleToSphere(faces[j].A, faces[j].B);
+B = middleToSphere(faces[j].B, faces[j].C);
+C = middleToSphere(faces[j].C, faces[j].A);
+
+faces2.push({A:faces[j].A, B:A, C:C});
+faces2.push({A:faces[j].B, B:B, C:A});
+faces2.push({A:faces[j].C, B:C, C:B});
+faces2.push({A:A, B:B, C:C});
+
+j++;
+}
+
+faces = faces2;
+
+i++;	
+}
+
+
+
+var rotateTri = 0;
+while(rotateTri < faces.length){
+faces[rotateTri].A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+faces[rotateTri].B = add(rotate(subtract(faces[rotateTri].B, position), axis, angle), position);
+faces[rotateTri].C = add(rotate(subtract(faces[rotateTri].C, position), axis, angle), position);
+
+rotateTri++;
+}
+
+var sortFaces = [];
+
+var sortNumber = 0;
+while(sortNumber < faces.length){
+sortFaces[sortNumber] = {A:faces[sortNumber].A, B:faces[sortNumber].B, C:faces[sortNumber].C, distance:magnitude(subtract(viewingPosition, scale(add(add(faces[sortNumber].A, faces[sortNumber].B), faces[sortNumber].C), 1/3)))};
+
+sortNumber++;
+}
+
+sortFaces.sort(function(a, b){return b.distance - a.distance;});
+
+var drawTri = 0;
+while(drawTri < faces.length){
+c.beginPath();
+c.moveTo(Sizing * perspective(sortFaces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+c.lineTo(Sizing * perspective(sortFaces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+	drawTri++;
+}
+}
+function PatternedIcosphere(position, radius, axis, angle, recursionLevel, half1, half2){
+var icosahedron = [];
+var t = (1 +  Math.sqrt(5))/2;
+
+icosahedron.push({x: - 1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x: - 1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+
+var faces = [];
+
+function icosahedronTriangles(a, b, c){
+faces.push({A:icosahedron[a], B:icosahedron[b], C:icosahedron[c]});
+}
+
+icosahedronTriangles(0, 11, 5);
+icosahedronTriangles(0, 5, 1);
+icosahedronTriangles(0, 1, 7);
+icosahedronTriangles(0, 7, 10);
+icosahedronTriangles(0, 10, 11);
+
+icosahedronTriangles(1, 5, 9);
+icosahedronTriangles(5, 11, 4);
+icosahedronTriangles(11, 10, 2);
+icosahedronTriangles(10, 7, 6);
+icosahedronTriangles(7, 1, 8);
+
+icosahedronTriangles(3, 9, 4);
+icosahedronTriangles(3, 4, 2);
+icosahedronTriangles(3, 2, 6);
+icosahedronTriangles(3, 6, 8);
+icosahedronTriangles(3, 8, 9);
+
+icosahedronTriangles(4, 9, 5);
+icosahedronTriangles(2, 4, 11);
+icosahedronTriangles(6, 2, 10);
+icosahedronTriangles(8, 6, 7);
+icosahedronTriangles(9, 8, 1);
+
+function middleToSphere(a, b){
+return add(scale(normalize(subtract(scale(add(a, b), 0.5), position)), radius), position);
+}
+
+var A;
+var B;
+var C;
+
+var i = 0;
+while(i < recursionLevel){
+var j = 0;
+var faces2 = [];
+
+while(j < faces.length){
+A = middleToSphere(faces[j].A, faces[j].B);
+B = middleToSphere(faces[j].B, faces[j].C);
+C = middleToSphere(faces[j].C, faces[j].A);
+
+faces2.push({A:faces[j].A, B:A, C:C});
+faces2.push({A:faces[j].B, B:B, C:A});
+faces2.push({A:faces[j].C, B:C, C:B});
+faces2.push({A:A, B:B, C:C});
+
+j++;
+}
+
+faces = faces2;
+
+i++;	
+}
+
+var color = [];
+
+var colorNumber = 0;
+while(colorNumber < faces.length){
+if(scale(add(add(faces[colorNumber].A, faces[colorNumber].B), faces[colorNumber].C), 1/3).y > position.y){
+color[colorNumber] = half1;}     
+else{color[colorNumber] = half2;}
+colorNumber++;
+}
+var rotateTri = 0;
+while(rotateTri < faces.length){
+faces[rotateTri].A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+faces[rotateTri].B = add(rotate(subtract(faces[rotateTri].B, position), axis, angle), position);
+faces[rotateTri].C = add(rotate(subtract(faces[rotateTri].C, position), axis, angle), position);
+
+rotateTri++;
+}
+
+
+
+var sortFaces = [];
+
+var sortNumber = 0;
+while(sortNumber < faces.length){
+sortFaces[sortNumber] = {A:faces[sortNumber].A, B:faces[sortNumber].B, C:faces[sortNumber].C, color:color[sortNumber], distance:magnitude(subtract(viewingPosition, scale(add(add(faces[sortNumber].A, faces[sortNumber].B), faces[sortNumber].C), 1/3)))};
+
+sortNumber++;
+}
+
+sortFaces.sort(function(a, b){return b.distance - a.distance;});
+
+var drawTri = 0;
+while(drawTri < faces.length){
+    c.fillStyle = `rgb(
+		${sortFaces[drawTri].color.R}, 
+		${sortFaces[drawTri].color.G}, 
+		${sortFaces[drawTri].color.B})`
+c.beginPath();
+c.moveTo(Sizing * perspective(sortFaces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+c.lineTo(Sizing * perspective(sortFaces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+	drawTri++;
+}
+}
+function Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions){
+	var icosahedron = [];
+var t = (1 +  Math.sqrt(5))/2;
+
+icosahedron.push({x: - 1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x: - 1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+
+var original_faces = [];
+var faces = [];
+function icosahedronTriangles(a, b, c){
+original_faces.push({A:icosahedron[a], B:icosahedron[b], C:icosahedron[c]});
+}
+
+icosahedronTriangles(0, 11, 5);
+icosahedronTriangles(0, 5, 1);
+icosahedronTriangles(0, 1, 7);
+icosahedronTriangles(0, 7, 10);
+icosahedronTriangles(0, 10, 11);
+
+icosahedronTriangles(1, 5, 9);
+icosahedronTriangles(5, 11, 4);
+icosahedronTriangles(11, 10, 2);
+icosahedronTriangles(10, 7, 6);
+icosahedronTriangles(7, 1, 8);
+
+icosahedronTriangles(3, 9, 4);
+icosahedronTriangles(3, 4, 2);
+icosahedronTriangles(3, 2, 6);
+icosahedronTriangles(3, 6, 8);
+icosahedronTriangles(3, 8, 9);
+
+icosahedronTriangles(4, 9, 5);
+icosahedronTriangles(2, 4, 11);
+icosahedronTriangles(6, 2, 10);
+icosahedronTriangles(8, 6, 7);
+icosahedronTriangles(9, 8, 1);
+
+function move_to_sphere(a){
+return add(scale(normalize(subtract(a, position)), radius), position);
+}
+
+function subdivide_triangle(triangle, number_of_subdivisions){
+var A = triangle.A;
+var B = triangle.B;
+var C = triangle.C;
+
+var points = [];
+var triangles = [];
+var i = 0;
+while(i <= number_of_subdivisions){
+var j = 0;
+while(j <= i){
+var new_point;
+if(i == 0){
+new_point = A;	
+}	
+else{
+new_point = add(add(A, scale(subtract(B, A), i/number_of_subdivisions)), scale(subtract(C, B), j/number_of_subdivisions));
+}
+points.push({point:new_point, i:i, j:j});
+j++;	
+}
+i++;	
+}
+
+function find_n(i, j){
+    if(i == 0){return 0;}
+else{
+return i * (i + 1)/2 + j;    
+}
+}
+
+var p = 0;
+while(p < points.length){
+var I = points[p].i;
+var J = points[p].j;
+
+function possible_triangles(I1, J1, I2, J2){
+if(I1 >= 0 && J1 >= 0 && I1 <= number_of_subdivisions && J1 <= I1 && I2 >= 0 && J2 >= 0 && I2 <= number_of_subdivisions && J2 <= I2){	
+triangles.push({A:points[p].point, B:points[find_n(I1, J1)].point, C:points[find_n(I2, J2)].point});
+}
+}
+
+possible_triangles(I - 1, J, I - 1, J - 1)
+possible_triangles(I - 1, J - 1, I, J - 1)
+possible_triangles(I, J - 1, I + 1, J)
+possible_triangles(I + 1, J, J, I + 1, J + 1)
+possible_triangles(I + 1, J + 1, I, J + 1)
+possible_triangles(I, J + 1, I - 1, J)
+
+p++;
+}
+
+function removeDuplicates(arr) {
+    return arr.filter((value,
+        index) => arr.indexOf(value) === index);
+}
+
+triangles = removeDuplicates(triangles);
+
+return triangles;
+
+}
+var subdivided_original_face = [];
+
+var f = 0;
+while(f < original_faces.length){
+	subdivided_original_face[f] = [];
+	subdivided_original_face[f] = subdivide_triangle(original_faces[f], number_of_subdivisions);
+
+
+var a = 0;
+while(a < subdivided_original_face[f].length){
+
+var pushed_to_sphere = {A:move_to_sphere(subdivided_original_face[f][a].A), B:move_to_sphere(subdivided_original_face[f][a].B), C:move_to_sphere(subdivided_original_face[f][a].C)};
+faces.push(pushed_to_sphere);
+a++;	
+}
+f++;
+}
+
+var rotateTri = 0;
+while(rotateTri < faces.length){
+faces[rotateTri].A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+faces[rotateTri].B = add(rotate(subtract(faces[rotateTri].B, position), axis, angle), position);
+faces[rotateTri].C = add(rotate(subtract(faces[rotateTri].C, position), axis, angle), position);
+
+rotateTri++;
+}
+
+var sortFaces = [];
+
+var sortNumber = 0;
+while(sortNumber < faces.length){
+sortFaces[sortNumber] = {A:faces[sortNumber].A, B:faces[sortNumber].B, C:faces[sortNumber].C, distance:magnitude(subtract(viewingPosition, scale(add(add(faces[sortNumber].A, faces[sortNumber].B), faces[sortNumber].C), 1/3)))};
+
+sortNumber++;
+}
+
+sortFaces.sort(function(a, b){return b.distance - a.distance;});
+
+var drawTri = 0;
+while(drawTri < faces.length){
+c.beginPath();
+c.moveTo(Sizing * perspective(sortFaces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+c.lineTo(Sizing * perspective(sortFaces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+	drawTri++;
+}
+
+}
+function Patterned_Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions, half1, half2){
+	var icosahedron = [];
+var t = (1 +  Math.sqrt(5))/2;
+
+icosahedron.push({x: - 1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x: - 1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+
+var original_faces = [];
+var faces = [];
+function icosahedronTriangles(a, b, c){
+original_faces.push({A:icosahedron[a], B:icosahedron[b], C:icosahedron[c]});
+}
+
+icosahedronTriangles(0, 11, 5);
+icosahedronTriangles(0, 5, 1);
+icosahedronTriangles(0, 1, 7);
+icosahedronTriangles(0, 7, 10);
+icosahedronTriangles(0, 10, 11);
+
+icosahedronTriangles(1, 5, 9);
+icosahedronTriangles(5, 11, 4);
+icosahedronTriangles(11, 10, 2);
+icosahedronTriangles(10, 7, 6);
+icosahedronTriangles(7, 1, 8);
+
+icosahedronTriangles(3, 9, 4);
+icosahedronTriangles(3, 4, 2);
+icosahedronTriangles(3, 2, 6);
+icosahedronTriangles(3, 6, 8);
+icosahedronTriangles(3, 8, 9);
+
+icosahedronTriangles(4, 9, 5);
+icosahedronTriangles(2, 4, 11);
+icosahedronTriangles(6, 2, 10);
+icosahedronTriangles(8, 6, 7);
+icosahedronTriangles(9, 8, 1);
+
+function move_to_sphere(a){
+return add(scale(normalize(subtract(a, position)), radius), position);
+}
+
+function subdivide_triangle(triangle, number_of_subdivisions){
+var A = triangle.A;
+var B = triangle.B;
+var C = triangle.C;
+
+var points = [];
+var triangles = [];
+var i = 0;
+while(i <= number_of_subdivisions){
+var j = 0;
+while(j <= i){
+var new_point;
+if(i == 0){
+new_point = A;	
+}	
+else{
+new_point = add(add(A, scale(subtract(B, A), i/number_of_subdivisions)), scale(subtract(C, B), j/number_of_subdivisions));
+}
+points.push({point:new_point, i:i, j:j});
+j++;	
+}
+i++;	
+}
+
+function find_n(i, j){
+    if(i == 0){return 0;}
+else{
+return i * (i + 1)/2 + j;    
+}
+}
+
+var p = 0;
+while(p < points.length){
+var I = points[p].i;
+var J = points[p].j;
+
+function possible_triangles(I1, J1, I2, J2){
+if(I1 >= 0 && J1 >= 0 && I1 <= number_of_subdivisions && J1 <= I1 && I2 >= 0 && J2 >= 0 && I2 <= number_of_subdivisions && J2 <= I2){	
+triangles.push({A:points[p].point, B:points[find_n(I1, J1)].point, C:points[find_n(I2, J2)].point});
+}
+}
+
+possible_triangles(I - 1, J, I - 1, J - 1)
+possible_triangles(I - 1, J - 1, I, J - 1)
+possible_triangles(I, J - 1, I + 1, J)
+possible_triangles(I + 1, J, J, I + 1, J + 1)
+possible_triangles(I + 1, J + 1, I, J + 1)
+possible_triangles(I, J + 1, I - 1, J)
+
+p++;
+}
+
+function removeDuplicates(arr) {
+    return arr.filter((value,
+        index) => arr.indexOf(value) === index);
+}
+
+triangles = removeDuplicates(triangles);
+
+return triangles;
+
+}
+var subdivided_original_face = [];
+
+var f = 0;
+while(f < original_faces.length){
+	subdivided_original_face[f] = [];
+	subdivided_original_face[f] = subdivide_triangle(original_faces[f], number_of_subdivisions);
+
+
+var a = 0;
+while(a < subdivided_original_face[f].length){
+
+var pushed_to_sphere = {A:move_to_sphere(subdivided_original_face[f][a].A), B:move_to_sphere(subdivided_original_face[f][a].B), C:move_to_sphere(subdivided_original_face[f][a].C)};
+faces.push(pushed_to_sphere);
+a++;	
+}
+f++;
+}
+
+var color = [];
+
+var colorNumber = 0;
+while(colorNumber < faces.length){
+if(scale(add(add(faces[colorNumber].A, faces[colorNumber].B), faces[colorNumber].C), 1/3).y > position.y){
+color[colorNumber] = half1;}     
+else{color[colorNumber] = half2;}
+colorNumber++;
+}
+
+var rotateTri = 0;
+while(rotateTri < faces.length){
+faces[rotateTri].A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+faces[rotateTri].B = add(rotate(subtract(faces[rotateTri].B, position), axis, angle), position);
+faces[rotateTri].C = add(rotate(subtract(faces[rotateTri].C, position), axis, angle), position);
+
+rotateTri++;
+}
+
+var sortFaces = [];
+
+var sortNumber = 0;
+while(sortNumber < faces.length){
+	sortFaces[sortNumber] = {A:faces[sortNumber].A, B:faces[sortNumber].B, C:faces[sortNumber].C, color:color[sortNumber], distance:magnitude(subtract(viewingPosition, scale(add(add(faces[sortNumber].A, faces[sortNumber].B), faces[sortNumber].C), 1/3)))};
+
+sortNumber++;
+}
+
+sortFaces.sort(function(a, b){return b.distance - a.distance;});
+
+var drawTri = 0;
+while(drawTri < faces.length){
+    c.fillStyle = `rgb(
+		${sortFaces[drawTri].color.R}, 
+		${sortFaces[drawTri].color.G}, 
+		${sortFaces[drawTri].color.B})`
+c.beginPath();
+c.moveTo(Sizing * perspective(sortFaces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(sortFaces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+c.lineTo(Sizing * perspective(sortFaces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(sortFaces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+	drawTri++;
+}
+
+}
+function arrow(vectorPosition, vector, axisOfEnd, endLength, endAngle){
+c.beginPath();
+c.moveTo(Sizing * perspective(vectorPosition, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(vectorPosition, viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(add(vectorPosition, vector), viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(add(vectorPosition, vector), viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+
+c.moveTo(Sizing * perspective(add(vectorPosition, vector), viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(add(vectorPosition, vector), viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing*perspective(add(add(vectorPosition, vector), scale(normalize(rotate(vector,axisOfEnd, Pi+endAngle/2)), endLength)), viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(add(add(vectorPosition, vector), scale(normalize(rotate(vector,axisOfEnd, Pi+endAngle/2)), endLength)), viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+
+c.lineTo(Sizing*perspective(add(add(vectorPosition, vector), scale(normalize(rotate(vector,axisOfEnd, Pi-endAngle/2)), endLength)), viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(add(add(vectorPosition, vector), scale(normalize(rotate(vector,axisOfEnd, Pi-endAngle/2)), endLength)), viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+c.fill();
+}
+function arrow2D(vectorPosition, vector, endLength, endAngle){
+	c.beginPath();
+c.moveTo(vectorPosition.x, vectorPosition.y);
+c.lineTo(add(vectorPosition, vector).x, add(vectorPosition, vector).y);
+c.stroke();
+c.fill();
+
+c.moveTo(add(vectorPosition, vector).x, add(vectorPosition, vector).y);
+c.lineTo(add(add(vectorPosition, vector), scale(normalize(rotate(vector, {x:0, y:0, z:1}, Pi + endAngle/2)), endLength)).x, add(add(vectorPosition, vector), scale(normalize(rotate(vector, {x:0, y:0, z:1}, Pi + endAngle/2)), endLength)).y);
+c.stroke();
+c.fill();
+
+c.lineTo(add(add(vectorPosition, vector), scale(normalize(rotate(vector, {x:0, y:0, z:1}, Pi - endAngle/2)), endLength)).x, add(add(vectorPosition, vector), scale(normalize(rotate(vector, {x:0, y:0, z:1}, Pi - endAngle/2)), endLength)).y);
+c.stroke();
+c.fill();
+
+
+}
+
+//Other use functions
+function evenSphere(position, radius, samples){
+var points = [];
+var phi = Pi * (Math.sqrt(5) - 1);
+var i = 0;
+while(i < samples){
+var Y = radius - (i/(samples - 1)) * 2 * radius;
+var rad = Math.sqrt(radius * radius - Y * Y);
+var theta = phi * i;
+var X = Math.cos(theta) * rad;
+var Z = Math.sin(theta) * rad;
+points.push({x:X + position.x, y:Y + position.y, z:Z + position.z});
+i++;
+}
+return points;
+}
+
+//Gravity 
+function Magnitude_Of_Gravitational_Force(m1, m2, distance){
+return Gravitational_Constant * m1 * m2/(Math.pow(distance, 2));
+}
+function Gravity(m1, m2, p1, p2){
+var result = scale(normalize(subtract(p2, p1)), Magnitude_Of_Gravitational_Force(m1, m2, magnitude(subtract(p2, p1))));
+return result;
+}
+
+//Coulomb Force
+function ElectricForce(q1, q2, distance){
+return Math.abs(q1 * q2)/(4 * Pi * permittivity_of_free_space * (distance * distance));    
+}
+function Coulomb(q1, q2, p1, p2){
+var result;
+if(q1 == 0 || q2 == 0)
+{result = {x:0, y:0, z:0};}
+else{
+result = scale(normalize(subtract(p2, p1)), -Math.abs(q1 * q2)/(q1 * q2) * ElectricForce(q1, q2, magnitude(subtract(p2, p1))));
+}
+return result;
+}
+
+//Van Der Waals force
+function van_der_Waals_Magnitude(A, r1, r2, d){
+var z = d + r1 + r2;
+var result = -A/6 * (64 * Math.pow(r1, 3) * Math.pow(r2, 3) * z)/(Math.pow(Math.pow(z, 2) - Math.pow((r1 + r2), 2),2) * Math.pow(Math.pow(z, 2) - Math.pow((r1 - r2), 2),2))
+return result;
+}
+function van_der_Waals_Force(r1, r2, A, p1, p2){
+var result = scale(normalize(subtract(p1, p2)), van_der_Waals_Magnitude(A, r1, r2, magnitude(subtract(p2, p1))));
+return result;
+}
+
+//Drag
+function drag_magnitude(density, speed, drag_coefficient, cross_sectional_area){
+var result;
+result = 0.5 * density * Math.pow(speed, 2) * drag_coefficient * cross_sectional_area;
+return result;
+}
+function drag_force(density, velocity, drag_coefficient, cross_sectional_area){
+var result;
+result = scale(normalize(velocity), -drag_magnitude(density, magnitude(velocity), drag_coefficient, cross_sectional_area));
+return result;
+}
+
+// Collisions 
+//These were used for the case of two balls colliding. The more general case applicable for any two rigid bodies is using the change in momentum calculation and applying it figure out the final velocities and angular velocities
+function collision(v1, v2, m1, m2, e){
+return (m1 * v1 +  m2 * v2 +  m2 * e * (v2 - v1))/(m1 +  m2);
+}
+function solveCollision(p1, p2, v1, v2, m1, m2, e){
+var v1Projection = scale(normalize(subtract(p2, p1)), dot(v1, normalize(subtract(p2, p1))));
+var v2Projection = scale(normalize(subtract(p1, p2)), dot(v2, normalize(subtract(p1, p2))));
+var finalSpeedInDirection = scale(normalize(subtract(p2, p1)), collision(dot(v1, normalize(subtract(p2, p1))), dot(v2, normalize(subtract(p2, p1))), m1, m2, e));
+var speedNotInDirection = subtract(v1, v1Projection);
+var finalVelocity1 = add(finalSpeedInDirection, speedNotInDirection);
+return finalVelocity1;
+}
+
+function find_Change_In_Momentum(position1, position2, position_of_collision, velocity1, velocity2, angular_velocity1, angular_velocity2, mass1, mass2, moment_of_Inertia1, moment_of_Inertia2, surface_normal, e){
+var r_ac = subtract(position_of_collision, position1); 
+var r_bc = subtract(position_of_collision, position2); 
+var v_c =  subtract(add(velocity1, cross(angular_velocity1, r_ac)), add(velocity2, cross(angular_velocity2, r_bc)));
+var n = normalize(surface_normal);
+
+var change_in_momentum = scale(n, -(1 + e) * dot(v_c, n)/(1/mass1 + 1/mass2 + dot(cross(r_ac, n), cross(r_ac, n))/moment_of_Inertia1 + dot(cross(r_bc, n), cross(r_bc, n))/moment_of_Inertia2));
+
+return change_in_momentum;
+}
+
+
+
+
+
+//Interaction changes
+function addObject(pos,vel,rad,col,F,m,cha,p,pC){
+numberOfElements++;
+position[numberOfElements-1]=pos;
+velocity[numberOfElements-1]=vel;
+radius[numberOfElements-1]=rad;
+color[numberOfElements-1]=col;
+force[numberOfElements-1]=F;
+mass[numberOfElements-1]=m;
+charge[numberOfElements-1]=cha;
+path[numberOfElements-1]=p;
+pathColor[numberOfElements-1]=pC;
+}
+
+function removeObject(n){
+numberOfElements--;
+position.splice(n,1);
+velocity.splice(n,1);
+radius.splice(n,1);
+color.splice(n,1);
+force.splice(n,1);
+mass.splice(n,1);
+charge.splice(n,1);
+path.splice(n,1);
+pathColor.splice(n,1);
+}
+
+function changeObject(n,changeType,newValue){
+if(changeType == "position"){
+position[n] = newValue; 
+}
+if(changeType == "velocity"){
+velocity[n] = newValue; 
+}
+}
+
+
+
+
+
+//Simulation
+function simulate() {
+//Substepping
+ for(var step=0; step < numSteps; step++){
+function gravityBetween(n1, n2){
+return Gravity(mass[n1], mass[n2], position[n1], position[n2]);}
+function coulombBetween(n1, n2){
+return Coulomb(charge[n1], charge[n2], position[n1], position[n2]);
+}
+function VanDerWaalsbetween(n1, n2){
+return van_der_Waals_Force(radius[n1], radius[n2], Hamaker_Constant, position[n1], position[n2])
+}
+
+var earlier = 0;
+while(earlier < numberOfElements){
+earlier_position[earlier] = position[earlier];
+earlier_velocity[earlier] = velocity[earlier];
+
+earlier++;	
+}
+
+time = time + timeStep;
+
+//Useful for different methods of integration
+function forceWithTime(timeChange, velocity){
+var total_force = [];
+var gravity_Part  = [];
+var coulomb_Part = [];
+var van_der_Waals_Part = [];
+var gravityOfEarth_Part = [];
+var drag_part = [];
+var general_relativity_gravity_part = [];
+
+var object = 0;
+while(object < numberOfElements){
+general_relativity_gravity_part[object] = {x:0, y:0, z:0};
+gravity_Part[object] = {x:0, y:0, z:0};
+coulomb_Part[object] = {x:0, y:0, z:0};
+van_der_Waals_Part[object] = {x:0, y:0, z:0};
+gravityOfEarth_Part[object] = {x:0, y:0, z:0};
+drag_part[object] = {x:0, y:0, z:0};
+
+var anotherObject = 0;
+while(anotherObject < numberOfElements){
+if(anotherObject !== object){
+if(consider__newtonian_gravity == true && small_objects.includes(anotherObject) == false){
+gravity_Part[object] = add(gravity_Part[object], Gravity(mass[object], mass[anotherObject], add(earlier_position[object], scale(velocity[object], timeChange)), add(earlier_position[anotherObject], scale(velocity[anotherObject], timeChange))));}
+if(consider_Coulomb == true){
+coulomb_Part[object] = add(coulomb_Part[object], Coulomb(charge[object], charge[anotherObject], add(earlier_position[object], scale(velocity[object], timeChange)), add(earlier_position[anotherObject], scale(velocity[anotherObject], timeChange))));}
+if(consider_van_der_Waals == true){
+van_der_Waals_Part[object] = add(van_der_Waals_Part[object], van_der_Waals_Force(radius[object], radius[anotherObject], Hamaker_Constant, add(earlier_position[object], scale(velocity[object], timeChange)), add(earlier_position[anotherObject], scale(velocity[anotherObject], timeChange))));}
+}
+anotherObject++;
+}
+if(consider_Earth_Gravity == true){
+gravityOfEarth_Part[object] = {x:0, y:-mass[object] * g, z:0};}
+if(consider_drag == true){
+drag_part[object] = drag_force(fluid_density, velocity[object], drag_coefficient, Pi * Math.pow(radius[object], 2));}
+if(consider_general_relativity == true){
+var term_1 = {x:0, y:0, z:0};
+var term_2 = {x:0, y:0, z:0};
+var f1 = 0;
+var f2 = 0;
+var term_3 = {x:0, y:0, z:0};
+var term_4 = {x:0, y:0, z:0};
+
+var position_of_object_with_time = add(earlier_position[object], scale(velocity[object], timeChange));
+var j = 0;
+while(j < numberOfElements){
+if(small_objects.includes(j) == false){
+var position_of_j_with_time = add(earlier_position[j], scale(velocity[j], timeChange));}
+//The issue was that k wasn't defined as being different than the object and j before, only one of the two. This caused strange effects. I fixed it.
+var k = 0;
+while(k < numberOfElements){
+var position_of_k_with_time = add(earlier_position[k], scale(velocity[k], timeChange));
+if(k !== object && small_objects.includes(k) == false){
+f1 = f1 + Gravitational_Constant * mass[k]/magnitude(subtract(position_of_object_with_time, position_of_k_with_time));
+}
+if(k !== j && small_objects.includes(k) == false && small_objects.includes(j) == false){
+f2 = f2 + Gravitational_Constant * mass[k]/magnitude(subtract(position_of_j_with_time, position_of_k_with_time));
+}
+k++;  
+}
+
+if(j !== object && small_objects.includes(j) == false){
+//General relativity is an extension of Newton's Unversal Law of Gravitation. That is why the first term is Newton's Law of Gravity.
+term_1 = add(term_1, scale(Gravity(mass[object], mass[j], position_of_object_with_time, position_of_j_with_time), 1/mass[object]))
+
+term_2 = add(term_2, scale(scale(Gravity(mass[object], mass[j], position_of_object_with_time, position_of_j_with_time), 1/mass[object]), 1/(speed_of_light * speed_of_light) * ((magnitude(velocity[object]) * magnitude(velocity[object]) + 2 * magnitude(velocity[j]) * magnitude(velocity[j])) - 4 * dot(velocity[object], velocity[j]) - 3/2 * dot(normalize(subtract(position_of_object_with_time, position_of_j_with_time)), velocity[j]) * dot(normalize(subtract(position_of_object_with_time, position_of_j_with_time)), velocity[j])
+- 4 * f1 - f2 + 1/2 * dot(subtract(position_of_j_with_time, position_of_object_with_time), scale(force[j], 1/mass[j])))));
+
+term_3 = add(term_3, scale(subtract(velocity[object], velocity[j]), 1/(speed_of_light * speed_of_light) * Gravitational_Constant * mass[j]/Math.pow(magnitude(subtract(position_of_object_with_time, position_of_j_with_time)), 2) * (dot(normalize(subtract(position_of_object_with_time, position_of_j_with_time)), subtract(scale(velocity[object], 4), scale(velocity[j], 3))))))
+
+term_4 = add(term_4,  scale(force[j], 7/(2 * speed_of_light  * speed_of_light) * Gravitational_Constant/Math.pow(magnitude(subtract(position_of_object_with_time, position_of_j_with_time)), 2)));
+}
+
+
+
+j++;
+}
+
+general_relativity_gravity_part[object] = scale(add(term_1, add(term_2, add(term_3, term_4))), mass[object]);
+}
+
+
+total_force[object] = add(add(add(add(add(gravity_Part[object], coulomb_Part[object]), van_der_Waals_Part[object]), gravityOfEarth_Part[object]), drag_part[object]), general_relativity_gravity_part[object]);
+
+object++;}
+
+return total_force;
+}
+
+//Euler Integration
+if(integration == "Euler"){
+force = forceWithTime(0, earlier_velocity);
+
+var loop_through_system = 0;
+while(loop_through_system < numberOfElements){
+position[loop_through_system].x = earlier_position[loop_through_system].x + timeStep * earlier_velocity[loop_through_system].x;
+
+velocity[loop_through_system].x = earlier_velocity[loop_through_system].x + timeStep * force[loop_through_system].x/mass[loop_through_system];
+
+position[loop_through_system].y = earlier_position[loop_through_system].y + timeStep * earlier_velocity[loop_through_system].y;
+
+velocity[loop_through_system].y = earlier_velocity[loop_through_system].y + timeStep * force[loop_through_system].y/mass[loop_through_system];
+
+position[loop_through_system].z = earlier_position[loop_through_system].z + timeStep * earlier_velocity[loop_through_system].z;
+
+velocity[loop_through_system].z = earlier_velocity[loop_through_system].z + timeStep *  force[loop_through_system].z/mass[loop_through_system];
+
+
+
+if(consider_rotation == true){
+torque[loop_through_system] = torque[loop_through_system];
+
+angular_velocity[loop_through_system] = add(angular_velocity[loop_through_system], scale(scale(torque[loop_through_system], 1/moment_of_Inertia[loop_through_system]), timeStep));
+
+angular_position[loop_through_system] = add(angular_position[loop_through_system], scale(angular_velocity[loop_through_system], timeStep));
+}
+loop_through_system++;
+}
+}
+//Runge-Kutta Integration
+if(integration == "Runge-Kutta"){
+
+var vk1 = [];
+var vk2 = [];
+var vk3 = [];
+var vk4 = [];
+var ak1 = [];
+var ak2 = [];
+var ak3 = [];
+var ak4 = [];
+var F1 = [];
+var F2 = [];
+var F3 = [];
+var F4 = [];
+
+vk1 = earlier_velocity;
+
+F1 = forceWithTime(0, vk1);
+
+var k1_loop = 0;
+while(k1_loop < numberOfElements){    
+ak1[k1_loop] = scale(F1[k1_loop], 1/mass[k1_loop]);
+vk2[k1_loop] = add(earlier_velocity[k1_loop], scale(ak1[k1_loop], timeStep/2));
+
+k1_loop++;
+}
+
+F2 = forceWithTime(timeStep/2, vk2);
+
+var k2_loop = 0;
+while(k2_loop < numberOfElements){    
+ak2[k2_loop] = scale(F2[k2_loop], 1/mass[k2_loop]);
+vk3[k2_loop] = add(earlier_velocity[k2_loop], scale(ak2[k2_loop], timeStep/2));
+
+k2_loop++;
+}
+
+F3 = forceWithTime(timeStep/2, vk3);
+
+var k3_loop = 0;
+while(k3_loop < numberOfElements){    
+ak3[k3_loop] = scale(F3[k3_loop], 1/mass[k3_loop]);
+vk4[k3_loop] = add(earlier_velocity[k3_loop], scale(ak3[k3_loop], timeStep));
+
+k3_loop++;
+}
+
+F4 = forceWithTime(timeStep, vk4);
+
+var k4_loop = 0;
+while(k4_loop < numberOfElements){    
+ak4[k4_loop] = scale(F4[k4_loop], 1/mass[k4_loop]);
+k4_loop++;
+}
+
+force = forceWithTime(0, earlier_velocity);
+
+var loop_through_system = 0;
+while(loop_through_system < numberOfElements){
+
+velocity[loop_through_system].x = earlier_velocity[loop_through_system].x + (timeStep/6) * (ak1[loop_through_system].x +  2 * ak2[loop_through_system].x +  2 * ak3[loop_through_system].x +  ak4[loop_through_system].x); 
+
+position[loop_through_system].x = earlier_position[loop_through_system].x +  (timeStep/6) * (vk1[loop_through_system].x +  2 * vk2[loop_through_system].x +  2 * vk3[loop_through_system].x +  vk4[loop_through_system].x);
+
+
+velocity[loop_through_system].y = earlier_velocity[loop_through_system].y +  (timeStep/6) * (ak1[loop_through_system].y +  2 * ak2[loop_through_system].y +  2 * ak3[loop_through_system].y +  ak4[loop_through_system].y);
+
+position[loop_through_system].y = earlier_position[loop_through_system].y +  (timeStep/6) * (vk1[loop_through_system].y +  2 * vk2[loop_through_system].y +  2 * vk3[loop_through_system].y +  vk4[loop_through_system].y);
+
+
+velocity[loop_through_system].z = earlier_velocity[loop_through_system].z +  (timeStep/6) * (ak1[loop_through_system].z +  2 * ak2[loop_through_system].z +  2 * ak3[loop_through_system].z +  ak4[loop_through_system].z);
+
+position[loop_through_system].z = earlier_position[loop_through_system].z +  (timeStep/6) * (vk1[loop_through_system].z +  2 * vk2[loop_through_system].z +  2 * vk3[loop_through_system].z +  vk4[loop_through_system].z);
+
+
+if(consider_rotation == true){
+torque[loop_through_system] = torque[loop_through_system];
+
+angular_velocity[loop_through_system] = add(angular_velocity[loop_through_system], scale(scale(torque[loop_through_system], 1/moment_of_Inertia[loop_through_system]), timeStep));
+
+angular_position[loop_through_system] = add(angular_position[loop_through_system], scale(angular_velocity[loop_through_system], timeStep));
+}
+loop_through_system++;
+}
+}
+//Semi-implicit Euler Integration
+if(integration == "Semi-implicit Euler"){    
+force = forceWithTime(0, earlier_velocity);
+
+var loop_through_system = 0;
+while(loop_through_system < numberOfElements){
+
+velocity[loop_through_system].x = earlier_velocity[loop_through_system].x + timeStep * force[loop_through_system].x/mass[loop_through_system];
+
+position[loop_through_system].x = earlier_position[loop_through_system].x + timeStep * velocity[loop_through_system].x;
+
+velocity[loop_through_system].y = earlier_velocity[loop_through_system].y + timeStep * force[loop_through_system].y/mass[loop_through_system];
+
+position[loop_through_system].y = earlier_position[loop_through_system].y + timeStep * velocity[loop_through_system].y;
+
+velocity[loop_through_system].z = earlier_velocity[loop_through_system].z + timeStep *  force[loop_through_system].z/mass[loop_through_system];
+
+position[loop_through_system].z = earlier_position[loop_through_system].z + timeStep * velocity[loop_through_system].z;
+
+if(consider_rotation == true){
+torque[loop_through_system] = torque[loop_through_system];
+
+angular_velocity[loop_through_system] = add(angular_velocity[loop_through_system], scale(scale(torque[loop_through_system], 1/moment_of_Inertia[loop_through_system]), timeStep));
+
+angular_position[loop_through_system] = add(angular_position[loop_through_system], scale(angular_velocity[loop_through_system], timeStep));
+}
+loop_through_system++;
+}
+}
+//Verlet integration
+if(integration == "Verlet"){
+var nextForce = [];
+var velocity_for_new_position = [];
+force =  forceWithTime(0, earlier_velocity);
+
+var loop_through = 0;
+while(loop_through < numberOfElements){
+position[loop_through].x = earlier_position[loop_through].x + earlier_velocity[loop_through].x * timeStep + 1/2 * force[loop_through].x/mass[loop_through] * Math.pow(timeStep, 2);
+
+position[loop_through].y = earlier_position[loop_through].y + earlier_velocity[loop_through].y * timeStep + 1/2 * force[loop_through].y/mass[loop_through] * Math.pow(timeStep, 2);
+
+position[loop_through].z = earlier_position[loop_through].z + earlier_velocity[loop_through].z * timeStep + 1/2 * force[loop_through].z/mass[loop_through] * Math.pow(timeStep, 2);
+
+velocity_for_new_position[loop_through] = scale(force[loop_through], 1/2 * 1/mass[loop_through] * timeStep);
+
+loop_through++;
+}
+
+nextForce = forceWithTime(timeStep, velocity_for_new_position);
+
+var loop_through_again = 0;
+while(loop_through_again < numberOfElements){
+
+velocity[loop_through_again].x = earlier_velocity[loop_through_again].x + (force[loop_through_again].x/mass[loop_through_again] + nextForce[loop_through_again].x/mass[loop_through_again])/2 * timeStep;
+
+velocity[loop_through_again].y = earlier_velocity[loop_through_again].y + (force[loop_through_again].y/mass[loop_through_again] + nextForce[loop_through_again].y/mass[loop_through_again])/2 * timeStep;
+
+velocity[loop_through_again].z = earlier_velocity[loop_through_again].z + (force[loop_through_again].z/mass[loop_through_again] + nextForce[loop_through_again].z/mass[loop_through_again])/2 * timeStep;
+
+if(consider_rotation == true){
+torque[loop_through_again] = torque[loop_through_again];
+
+angular_velocity[loop_through_again] = add(angular_velocity[loop_through_again], scale(scale(torque[loop_through_again], 1/moment_of_Inertia[loop_through_again]), timeStep));
+
+angular_position[loop_through_again] = add(angular_position[loop_through_again], scale(angular_velocity[loop_through_again], timeStep));
+}
+
+loop_through_again++;
+}
+
+}
+//Leapfrog integration
+if(integration == "Leapfrog"){
+
+force =  forceWithTime(0, earlier_velocity);
+
+var halfway_velocity = [];
+var velocity_loop_1 = 0;
+while(velocity_loop_1 < numberOfElements){
+halfway_velocity[velocity_loop_1] = add(earlier_velocity[velocity_loop_1],  scale(force[velocity_loop_1], 1/mass[velocity_loop_1] * timeStep/2));
+
+
+velocity_loop_1++;
+}
+
+
+var final_force = forceWithTime(timeStep, halfway_velocity);
+
+var loop_through_system = 0;
+while(loop_through_system < numberOfElements){
+
+	position[loop_through_system].x = earlier_position[loop_through_system].x + halfway_velocity[loop_through_system].x * timeStep;
+	velocity[loop_through_system].x = halfway_velocity[loop_through_system].x + final_force[loop_through_system].x/mass[loop_through_system] * timeStep/2;
+
+	position[loop_through_system].y = earlier_position[loop_through_system].y + halfway_velocity[loop_through_system].y * timeStep;
+	velocity[loop_through_system].y = halfway_velocity[loop_through_system].y + final_force[loop_through_system].y/mass[loop_through_system] * timeStep/2;
+
+	position[loop_through_system].z = earlier_position[loop_through_system].z + halfway_velocity[loop_through_system].z * timeStep;
+	velocity[loop_through_system].z = halfway_velocity[loop_through_system].z + final_force[loop_through_system].z/mass[loop_through_system] * timeStep/2;
+
+	if(consider_rotation == true){
+torque[loop_through_system] = torque[loop_through_system];
+
+angular_velocity[loop_through_system] = add(angular_velocity[loop_through_system], scale(scale(torque[loop_through_system], 1/moment_of_Inertia[loop_through_system]), timeStep));
+
+angular_position[loop_through_system] = add(angular_position[loop_through_system], scale(angular_velocity[loop_through_system], timeStep));
+}
+
+	loop_through_system++;
+}
+
+
+
+}
+
+calcNumber = 0;
+while(calcNumber < numberOfElements){
+
+if(calculateForce == true){
+Gravitational_Force[calcNumber] = {x:0, y:0, z:0};    
+Coulomb_Force[calcNumber] = {x:0, y:0, z:0};
+van_der_Waals[calcNumber] = {x:0, y:0, z:0};
+other = 0;
+while(other  <  numberOfElements){
+if(other !==  calcNumber){
+Gravitational_Force[calcNumber] = add(Gravitational_Force[calcNumber], gravityBetween(calcNumber, other));
+Coulomb_Force[calcNumber] = add(Coulomb_Force[calcNumber], coulombBetween(calcNumber, other));
+van_der_Waals[calcNumber] = add(van_der_Waals[calcNumber], VanDerWaalsbetween(calcNumber, other));
+}    
+other++;
+}
+drag[calcNumber] = drag_force(fluid_density, velocity[calcNumber], drag_coefficient, Pi * Math.pow(radius[calcNumber], 2));
+}
+
+
+//Frictional impulse
+function findFriction(m, v_c, normal, j, µ_s, µ_k){
+var j_f;
+var j_r = magnitude(j);
+var t;
+var n = normalize(normal);
+var f_e = forceWithTime(calcNumber, 0, velocity);
+
+if(Math.abs(dot(v_c, n)) > frictionStop){
+t = normalize(subtract(v_c, scale(n, dot(v_c, n))));
+}
+if(Math.abs(dot(v_c, n)) <= frictionStop && Math.abs(dot(f_e, n)) > forceStop){
+t = normalize(subtract(f_e, scale(n, dot(f_e, n))));
+}
+if(Math.abs(dot(v_c, n)) <= frictionStop && Math.abs(dot(f_e, n)) <= forceStop){
+t = {x:0, y:0, z:0};
+}
+
+var j_s = j_r * µ_s;
+var j_k = j_r * µ_k;
+
+if(dot(v_c, t) == 0 && dot(scale(v_c, m), t) <= j_s){
+j_f = scale(t, -dot(scale(v_c, m), t));}
+
+if(dot(v_c, t) == 0 && dot(scale(v_c, m), t) > j_s){
+j_f = scale(t, -j_s);}
+
+if(dot(v_c, t) > 0){
+j_f = scale(t, -j_k);}
+
+return j_f;
+}
+
+//Wall Collisions
+function wallImpulse(v_ac, m, I, r_ac, normal, e){
+var n = normalize(normal);
+    var impulse = scale(n, -(1 + e) * dot(v_ac, n)/((1/m + dot((cross(r_ac, n)), (cross(r_ac, n)))/I)));
+
+return impulse;
+}
+
+function resolveBallWallCollision(normal, p_c){
+var v0 = velocity[calcNumber];
+var r = radius[calcNumber];
+var m = mass[calcNumber];
+var I = moment_of_Inertia[calcNumber];
+var w = angular_velocity[calcNumber];
+var e = wallElasticity;
+var n = normalize(normal);
+
+var impulse = {x:0, y:0, z:0};
+var v_c = add(v0, cross(w, scale(n, -r)));
+impulse = add(impulse, wallImpulse(v_c, m, I, scale(n, -r), n, e));
+
+if(consider_friction == true){
+var friction = findFriction(m, v_c, n, impulse, µ_s, µ_k);
+impulse = add(impulse, friction);}
+
+
+velocity[calcNumber] = add(velocity[calcNumber], scale(impulse, 1/m));
+
+angular_velocity[calcNumber] = add(angular_velocity[calcNumber], scale(cross(scale(n, -r), impulse), 1/I));
+
+position[calcNumber] = add(p_c, scale(n, radius[calcNumber]));
+
+}
+
+if(walls == true){
+if(collision_method == "General Rigid Body"){
+if(position[calcNumber].x > box.width - radius[calcNumber] + deformation * radius[calcNumber] && velocity[calcNumber].x > 0){
+resolveBallWallCollision({x:-1, y:0, z:0}, {x:box.width, y:position[calcNumber].y, z:position[calcNumber].z});
+}
+
+if(position[calcNumber].x < radius[calcNumber] - deformation * radius[calcNumber] && velocity[calcNumber].x < 0){
+    resolveBallWallCollision({x:1, y:0, z:0}, {x:0, y:position[calcNumber].y, z:position[calcNumber].z});
+}
+
+if(position[calcNumber].y > box.height - radius[calcNumber] + deformation * radius[calcNumber] && velocity[calcNumber].y > 0){
+    resolveBallWallCollision({x:0, y:-1, z:0}, {x:position[calcNumber].x, y:box.width, z:position[calcNumber].z});
+}
+
+if(position[calcNumber].y < radius[calcNumber] - deformation * radius[calcNumber] && velocity[calcNumber].y < 0){
+    resolveBallWallCollision({x:0, y:1, z:0}, {x:position[calcNumber].x, y:0, z:position[calcNumber].z});
+}
+
+if(position[calcNumber].z > box.depth - radius[calcNumber] + deformation * radius[calcNumber] && velocity[calcNumber].z > 0){
+    resolveBallWallCollision({x:0, y:0, z:-1}, {x:position[calcNumber].x, y:position[calcNumber].y, z:box.depth});
+}
+
+if(position[calcNumber].z < radius[calcNumber] - deformation * radius[calcNumber] && velocity[calcNumber].z < 0){
+    resolveBallWallCollision({x:0, y:0, z:1}, {x:position[calcNumber].x, y:position[calcNumber].y, z:0});
+}
+}
+
+if(collision_method == "Standard"){
+/*
+    if(position[calcNumber].x > box.width - radius[calcNumber] + deformation * radius[calcNumber] && velocity[calcNumber].x > 0){
+        change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x *-1 * wallElasticity, y:velocity[calcNumber].y, z:velocity[calcNumber].z}, velocity[calcNumber]));
+
+  //For changing boundaries, changing position is useful
+  position[calcNumber].x = box.width - radius[calcNumber];
+
+	velocity[calcNumber].x *= -1 * wallElasticity;
+
+	}
+	
+if(position[calcNumber].x < radius[calcNumber] - deformation * radius[calcNumber] && velocity[calcNumber].x < 0){
+    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x *-1 * wallElasticity, y:velocity[calcNumber].y, z:velocity[calcNumber].z}, velocity[calcNumber]));
+
+      //For changing boundaries, changing position is useful
+  position[calcNumber].x = radius[calcNumber];
+
+	velocity[calcNumber].x *= -1 * wallElasticity;
+}
+
+if(position[calcNumber].y > box.height - radius[calcNumber] + deformation * radius[calcNumber] && velocity[calcNumber].y > 0){
+    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y * -1 * wallElasticity, z:velocity[calcNumber].z}, velocity[calcNumber]));
+
+      //For changing boundaries, changing position is useful
+  position[calcNumber].y = box.height - radius[calcNumber];
+
+	velocity[calcNumber].y *= -1 * wallElasticity;
+}
+
+if(position[calcNumber].y < radius[calcNumber] - deformation * radius[calcNumber] && velocity[calcNumber].y < 0){
+    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y * -1 * wallElasticity, z:velocity[calcNumber].z}, velocity[calcNumber]));
+
+          //For changing boundaries, changing position is useful
+  position[calcNumber].y = radius[calcNumber];
+
+	velocity[calcNumber].y *= -1 * wallElasticity;
+}
+
+if(position[calcNumber].z > box.depth - radius[calcNumber] + deformation * radius[calcNumber] && velocity[calcNumber].z > 0){
+    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y, z:velocity[calcNumber].z * -1 * wallElasticity}, velocity[calcNumber]));
+
+          //For changing boundaries, changing position is useful
+  position[calcNumber].z = box.depth - radius[calcNumber];
+
+	velocity[calcNumber].z *= -1 * wallElasticity;
+}
+
+if(position[calcNumber].z < radius[calcNumber] - deformation * radius[calcNumber] && velocity[calcNumber].z < 0){
+    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y, z:velocity[calcNumber].z * -1 * wallElasticity}, velocity[calcNumber]));
+
+          //For changing boundaries, changing position is useful
+  position[calcNumber].y = radius[calcNumber];
+
+velocity[calcNumber].z *= -1 * wallElasticity;
+}
+*/
+//Brings within walls if it ever leaves
+if(position[calcNumber].x > box.width - radius[calcNumber] + deformation * radius[calcNumber]){
+  //For changing boundaries, changing position is useful
+  position[calcNumber].x = box.width - radius[calcNumber];
+if(velocity[calcNumber].x > 0){
+        change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x *-1 * wallElasticity, y:velocity[calcNumber].y, z:velocity[calcNumber].z}, velocity[calcNumber]));
+
+
+
+	velocity[calcNumber].x *= -1 * wallElasticity;
+
+	}
+}
+if(position[calcNumber].x < radius[calcNumber] - deformation * radius[calcNumber]){
+      //For changing boundaries, changing position is useful
+      position[calcNumber].x = radius[calcNumber];
+
+
+if(velocity[calcNumber].x < 0){
+    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x *-1 * wallElasticity, y:velocity[calcNumber].y, z:velocity[calcNumber].z}, velocity[calcNumber]));
+
+
+	velocity[calcNumber].x *= -1 * wallElasticity;
+}
+
+}
+
+if(position[calcNumber].y > box.height - radius[calcNumber] + deformation * radius[calcNumber] ){
+      //For changing boundaries, changing position is useful
+      position[calcNumber].y = box.height - radius[calcNumber];
+if(velocity[calcNumber].y > 0){
+    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y * -1 * wallElasticity, z:velocity[calcNumber].z}, velocity[calcNumber]));
+
+
+
+	velocity[calcNumber].y *= -1 * wallElasticity;
+}
+}
+if(position[calcNumber].y < radius[calcNumber] - deformation * radius[calcNumber]){
+          //For changing boundaries, changing position is useful
+          position[calcNumber].y = radius[calcNumber];
+
+if(velocity[calcNumber].y < 0){
+    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y * -1 * wallElasticity, z:velocity[calcNumber].z}, velocity[calcNumber]));
+
+
+	velocity[calcNumber].y *= -1 * wallElasticity;
+}
+}
+if(position[calcNumber].z > box.depth - radius[calcNumber] + deformation * radius[calcNumber] ){
+          //For changing boundaries, changing position is useful
+          position[calcNumber].z = box.depth - radius[calcNumber];
+if(velocity[calcNumber].z > 0){
+    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y, z:velocity[calcNumber].z * -1 * wallElasticity}, velocity[calcNumber]));
+
+
+
+	velocity[calcNumber].z *= -1 * wallElasticity;
+}
+}
+if(position[calcNumber].z < radius[calcNumber] - deformation * radius[calcNumber]){
+          //For changing boundaries, changing position is useful
+  position[calcNumber].z= radius[calcNumber];
+
+if(velocity[calcNumber].z < 0){
+    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y, z:velocity[calcNumber].z * -1 * wallElasticity}, velocity[calcNumber]));
+
+
+
+velocity[calcNumber].z *= -1 * wallElasticity;
+}
+}
+
+}
+
+
+}
+
+if(consider_collisions == true){
+//Collisions
+pvelocity[calcNumber] = velocity[calcNumber];
+n = calcNumber + 1;
+while(n < numberOfElements){
+if(position[calcNumber].x + radius[calcNumber] > position[n].x - radius[n] && position[n].x + radius[n] > position[calcNumber].x - radius[calcNumber]  && position[calcNumber].y + radius[calcNumber] > position[n].y - radius[n] && position[n].y + radius[n] > position[calcNumber].y - radius[calcNumber] && position[calcNumber].z + radius[calcNumber] > position[n].z - radius[n] && position[n].z + radius[n] > position[calcNumber].z - radius[calcNumber]){
+if(magnitude(subtract(position[n], position[calcNumber]))  <  radius[calcNumber] +  radius[n] - deformation * radius[calcNumber] && n !==  calcNumber){
+
+//Separates balls
+change[calcNumber] = ((radius[calcNumber] +  radius[n]) - magnitude(subtract(position[calcNumber], position[n])))/2;
+position[calcNumber] = add(position[calcNumber], scale(normalize(subtract(position[calcNumber], position[n])), change[calcNumber]));
+position[n] = add(position[n], scale(normalize(subtract(position[n], position[calcNumber])), change[calcNumber]));
+
+if(collision_method == "General Rigid Body"){
+//Calculates the change in momentum from the collision
+var change_in_momentum = find_Change_In_Momentum(position[calcNumber], position[n], add(scale(normalize(subtract(position[n], position[calcNumber])), radius[calcNumber]), position[calcNumber]), velocity[calcNumber], velocity[n], angular_velocity[calcNumber], angular_velocity[n], mass[calcNumber], mass[n], moment_of_Inertia[calcNumber], moment_of_Inertia[n], normalize(subtract(position[calcNumber], position[n])), elasticity);
+
+//r_ac is the vector from the center of mass of mass 1 to the point of collision, r_bc is the same for mass 2, and v_c is the relative velocity at the point of collision.
+var r_ac = scale(normalize(subtract(position[n], position[calcNumber])), radius[calcNumber]); 
+var r_bc = scale(normalize(subtract(position[calcNumber], position[n])), radius[n]); 
+var v_c =  subtract(add(velocity[calcNumber], cross(angular_velocity[calcNumber], r_ac)), add(velocity[n], cross(angular_velocity[n], r_bc)));
+//Calculates the change in momentum due to friction
+if(consider_friction == true){
+    var friction = findFriction(mass[calcNumber], v_c, normalize(subtract(position[n], position[calcNumber])), change_in_momentum, µ_s, µ_k);
+	change_in_momentum = add(change_in_momentum, friction);
+}
+
+//Applies newton's second law and changes velocities and angular velocities accordingly
+velocity[calcNumber] = add(velocity[calcNumber], scale(change_in_momentum, 1/mass[calcNumber]));
+
+velocity[n] = subtract(velocity[n], scale(change_in_momentum, 1/mass[n]));
+
+angular_velocity[calcNumber] = add(angular_velocity[calcNumber], scale(cross(r_ac, change_in_momentum), 1/moment_of_Inertia[calcNumber]));
+
+angular_velocity[n] = subtract(angular_velocity[n], scale(cross(r_bc, change_in_momentum), 1/moment_of_Inertia[n]));
+
+
+
+}
+
+if(collision_method == "Standard"){
+pvelocity[calcNumber] = velocity[calcNumber];
+pvelocity[n] = velocity[n];
+
+velocity[calcNumber] = solveCollision(position[calcNumber], position[n], pvelocity[calcNumber], pvelocity[n], mass[calcNumber], mass[n], elasticity);
+velocity[n] = solveCollision(position[n], position[calcNumber], pvelocity[n], pvelocity[calcNumber], mass[n], mass[calcNumber], elasticity);
+
+pvelocity[calcNumber] = velocity[calcNumber];
+pvelocity[n] = velocity[n];
+
+}
+
+}}
+n++;
+}
+}
+calcNumber++;
+}
+
+if(use_moving_object == true){
+center = position[center_number];
+}
+if(use_moving_object == false){
+center = {x:0, y:0, z:0};
+}
+if(step % Math.ceil(numSteps/trail_rate) == 0){
+if(showPath == true){
+var pathNumber = 0;
+    while(pathNumber < numberOfElements){
+ 
+path[pathNumber].x.push(position[pathNumber].x - center.x);
+path[pathNumber].y.push(position[pathNumber].y - center.y);
+path[pathNumber].z.push(position[pathNumber].z - center.z); 
+
+if(path[pathNumber].x.length > path_length){
+path[pathNumber].x.shift()
+path[pathNumber].y.shift()
+path[pathNumber].z.shift()
+}
+        pathNumber++;  }
+}
+
+
+}
+
+
+
+distance_between_bennu_and_earth = magnitude(subtract(position[3], position[10]));
+
+//distance_bennu_saved.push({distance:distance_between_bennu_and_earth, time:time})
+
+//sorted_distance_bennu_list = distance_bennu_saved.sort(function(a, b){return a.distance - b.distance;});
+/*
+if(distance_between_bennu_and_earth < closest_bennu.distance){
+closest_bennu.distance = distance_between_bennu_and_earth;
+closest_bennu.time = time;
+}*/
+/*if(magnitude(subtract(position[11], position[10])) < closest_satelite.distance){
+closest_satelite.distance = magnitude(subtract(position[11], position[10]));
+closest_satelite.time = time;
+}*/
+/*if(magnitude(subtract(position[12], position[11])) < closest_satelite.distance){
+closest_satelite.distance = magnitude(subtract(position[12], position[11]));
+closest_satelite.time = time;
+}*/
+distance_between_bennu_and_earth_in_astronomical_units = distance_between_bennu_and_earth/1.495978707e11;
+
+rounded_distance_between_bennu_and_earth_in_astronomical_units = (Math.round(distance_between_bennu_and_earth/1.495978707e11 * 10000)/10000);
+
+if(calculate_perihelion == true){
+//Finding mercury perihelion
+distance_list.push(magnitude(subtract(position[1], position[0])));
+position_of_mercury_list.push(position[1]);
+
+if(distance_list.length > 10){
+distance_list.shift();
+position_of_mercury_list.shift();
+}
+if(distance_list.length > 2){
+if(distance_list[distance_list.length - 2] < distance_list[distance_list.length - 1] && distance_list[distance_list.length - 2] < distance_list[distance_list.length - 3]){
+perihelion_truth = true;
+}
+else{perihelion_truth = false;}
+}
+
+if(perihelion_truth == true){
+number_of_perihelions++;  
+perihelion_of_mercury_list.push([{x:position_of_mercury_list[position_of_mercury_list.length - 2].x, y:position_of_mercury_list[position_of_mercury_list.length - 2].y, z:position_of_mercury_list[position_of_mercury_list.length - 2].z}, time, {x:position[0].x, y:position[0].y, z:position[0].z}]);
+}
+
+if(perihelion_of_mercury_list.length > t2){
+var v1 = subtract(perihelion_of_mercury_list[t1][0], perihelion_of_mercury_list[t1][2]);
+var v2 = subtract(perihelion_of_mercury_list[t2][0], perihelion_of_mercury_list[t2][2]);
+var angle_change =  Math.acos(dot(v1, v2)/(magnitude(v1) * magnitude(v2)));
+var period_of_time =  perihelion_of_mercury_list[t2][1] - perihelion_of_mercury_list[t1][1];
+var normalized_angular_displacement_vector = normalize(cross(v1, v2));
+precession_of_mercury = scale(normalized_angular_displacement_vector, angle_change/period_of_time);
+
+angle_shift = angle_change;
+}
+}
+
+
+/*
+time_measure_stop+=t_h;
+
+if(time_measure_stop * timeStep >= t_collide){
+v_f = lambert_solve(Gravitational_Constant * mass[0], numerical_future_motion(Gravitational_Constant * mass[0], position_satelite, velocity_satelite, t_start)[0], subtract(position[10], position[0]), t_collide - t_start, ot_satelite)[1];
+var v_f_directed = scale(normalize(velocity[10]), -magnitude(v_f));
+v_delta = magnitude(momentum_transfer(v_f_directed, velocity[10], m, mass[10], beta)) - magnitude(velocity[10]);
+v_start = velocity[10];
+velocity[10] = momentum_transfer(v_f_directed, velocity[10], m, mass[10], beta);
+/*var change_in_speed = 1 * 1e-3;
+velocity[10] = add(velocity[10], scale(normalize(velocity[10]), change_in_speed));
+v_delta = change_in_speed;
+*/
+/*
+v_delta = magnitude(velocity[10]) - magnitude(v_start);
+
+t_h = 0;
+time_measure_stop = 0;
+
+
+}
+*/
+/*
+var position_distance_push = 1;
+while(position_distance_push < numberOfElements){
+three_positions[position_distance_push].push(magnitude(subtract(position[position_distance_push], position[0])));
+if(three_positions[position_distance_push].length > 3){
+three_positions[position_distance_push].shift();
+}
+
+if(three_positions[position_distance_push].length == 3){
+if(three_positions[position_distance_push][1] < three_positions[position_distance_push][0] && three_positions[position_distance_push][1] < three_positions[position_distance_push][2]){
+perihelions[position_distance_push].push({time:time - timeStep, position: three_positions[position_distance_push][1]});
+}
+}
+
+if(perihelions[position_distance_push].length >= 2){
+//if(perihelions[position_distance_push].length * (perihelions[position_distance_push][1].time - perihelions[position_distance_push][0].time) > 150 * 365.25 * 24 * 3600){
+//orbital_periods[position_distance_push] = (perihelions[position_distance_push][perihelions[position_distance_push].length].time - perihelions[position_distance_push][0].time)/(24 * 3600)/8;
+//orbital_periods[position_distance_push] = (perihelions[position_distance_push][perihelions[position_distance_push].length - 1].time - perihelions[position_distance_push][0].time)/(24 * 3600)/(perihelions[position_distance_push].length - 1);
+orbital_periods[position_distance_push] = (perihelions[position_distance_push][perihelions[position_distance_push].length - 1].time - perihelions[position_distance_push][0].time)/(perihelions[position_distance_push].length - 1)/(3600 * 24);
+//}
+}
+position_distance_push++;
+}
+*/
+
+var position_distance_push = 0;
+while(position_distance_push < numberOfElements){
+distance_multiple[position_distance_push].push(magnitude(subtract(position[position_distance_push], position[0])));
+if(distance_multiple[position_distance_push].length > test_distance_multiple_number){
+distance_multiple[position_distance_push].shift();
+}
+
+var middle_distance_value = Math.floor(test_distance_multiple_number/2 + 1);
+if(distance_multiple[position_distance_push].length == test_distance_multiple_number){
+  sorted_distance_multiple[position_distance_push] = distance_multiple[position_distance_push].slice().sort(function(a, b){return b - a;});
+
+  if(sorted_distance_multiple[position_distance_push][0] == distance_multiple[position_distance_push][middle_distance_value - 1]){
+
+perihelions[position_distance_push].push({time:time - (test_distance_multiple_number - middle_distance_value) * timeStep, position: distance_multiple[position_distance_push][middle_distance_value - 1]});
+
+}
+
+}
+if(perihelions[position_distance_push].length > 1){
+//if(perihelions[position_distance_push].length * (perihelions[position_distance_push][1].time - perihelions[position_distance_push][0].time) > 150 * 365.25 * 24 * 3600){
+//orbital_periods[position_distance_push] = (perihelions[position_distance_push][perihelions[position_distance_push].length].time - perihelions[position_distance_push][0].time)/(24 * 3600)/8;
+//orbital_periods[position_distance_push] = (perihelions[position_distance_push][perihelions[position_distance_push].length - 1].time - perihelions[position_distance_push][0].time)/(24 * 3600)/(perihelions[position_distance_push].length - 1);
+orbital_periods[position_distance_push] = (perihelions[position_distance_push][perihelions[position_distance_push].length - 1].time - perihelions[position_distance_push][0].time)/(perihelions[position_distance_push].length - 1)/(3600 * 24);
+//}
+}
+
+position_distance_push++;
+}
+
+
+}
+time_pressure = time_pressure + timeStep/numSteps;
+if(time_pressure > 200 * timeStep){
+ time_pressure = 0; 
+ change_in_momentum_due_to_wall_collisions = 0;
+}
+pressure = change_in_momentum_due_to_wall_collisions/time_pressure/(2 * (box.width * box.height + box.width * box.depth + box.height * box.depth));
+
+//Vector fields
+if(showField == true){
+fieldPoints = 0;
+while(fieldPoints < xOfField * yOfField){
+gridY[fieldPoints] = Math.ceil(fieldPoints/xOfField);
+gridX[fieldPoints] = gridY[fieldPoints] * xOfField - fieldPoints;
+
+posX[fieldPoints] = gridX[fieldPoints] * 0.02/xOfField;
+posY[fieldPoints] = gridY[fieldPoints] * 0.02/yOfField;
+
+vectorPosition[fieldPoints] = {x:posX[fieldPoints], y:posY[fieldPoints], z:0};
+
+gravitationalField[fieldPoints] = {x:0, y:0, z:0};
+
+ElectricField[fieldPoints] = {x:0, y:0, z:0};
+
+var fieldOther = 0;
+while(fieldOther < numberOfElements){
+
+gravitationalField[fieldPoints].x += Gravity(1, mass[fieldOther], vectorPosition[fieldPoints], position[fieldOther]).x;
+gravitationalField[fieldPoints].y += Gravity(1, mass[fieldOther], vectorPosition[fieldPoints], position[fieldOther]).y;
+gravitationalField[fieldPoints].z += Gravity(1, mass[fieldOther], vectorPosition[fieldPoints], position[fieldOther]).z;
+
+ElectricField[fieldPoints].x += Coulomb(1, charge[fieldOther], vectorPosition[fieldPoints], position[fieldOther]).x;
+ElectricField[fieldPoints].y += Coulomb(1, charge[fieldOther], vectorPosition[fieldPoints], position[fieldOther]).y;
+ElectricField[fieldPoints].z += Coulomb(1, charge[fieldOther], vectorPosition[fieldPoints], position[fieldOther]).z;
+
+fieldOther++;}	
+
+vectorField[fieldPoints] = ElectricField[fieldPoints];
+fieldPoints++;
+} 
+}
+
+if(showSurroundingField == true){
+
+var i;
+var j;
+var k;
+var nField;
+
+i = 0;
+while(i < numberOfElements){
+linesStart[i] = [];
+fieldAtPoint[i] = [];
+linesSurround[i] = [];
+j = 0;
+while(j < surfacePoints){
+linesStart[i][j] = evenSphere(position[i], radius[i]/2, surfacePoints)[j];
+fieldAtPoint[i][j] = [];
+linesSurround[i][j] = [];
+linesSurround[i][j].push(linesStart[i][j]);
+k = 1;
+while(k < numberOfLines){
+fieldAtPoint[i][j][k] = {x:0, y:0, z:0};
+nField = 0;
+while(nField < numberOfElements){
+fieldAtPoint[i][j][k].x += Coulomb(1, charge[nField], linesSurround[i][j][k-1], position[nField]).x;
+fieldAtPoint[i][j][k].y += Coulomb(1, charge[nField], linesSurround[i][j][k-1], position[nField]).y;
+fieldAtPoint[i][j][k].z += Coulomb(1, charge[nField], linesSurround[i][j][k-1], position[nField]).z;
+nField++;}
+linesSurround[i][j][k] = add(linesSurround[i][j][k-1], scale(normalize(fieldAtPoint[i][j][k]), changer));
+k++;}
+j++;}  
+i++;}
+}
+
+
+
+}
+
+// Drawing
+function draw() {
+
+
+
+		c.clearRect(0, 0, canvas.width, canvas.height);
+
+		c.fillStyle = "white";
+
+    c.strokeStyle = "rgba(1, 1, 1, 0)";
+
+        c.fillRect(0, 0, canvas.width, canvas.height);
+        c.strokeStyle = "rgba(1, 1, 1, 0)";
+
+		
+
+        //Axes
+
+        lengthOfAxisX = box.width;
+lengthOfAxisY = box.height;
+lengthOfAxisZ = box.depth;
+
+c.lineWidth = 2; 
+
+c.strokeStyle = `rgb(
+		${255}, 
+		${0}, 
+		${0})`
+c.fillStyle = `rgb(
+		${255}, 
+		${0}, 
+		${0})`
+
+
+
+    c.strokeStyle = `rgb(
+		${0}, 
+		${0}, 
+		${255})`
+c.fillStyle = `rgb(
+		${0}, 
+		${0}, 
+		${255})`
+
+    
+arrow({x:0, y:0, z:0}, {x:lengthOfAxisX, y:0, z:0}, {x:0, y:0, z:1}, 0*lengthOfAxisX/20,arrowAngle);
+c.strokeStyle = `rgb(
+		${0}, 
+		${255}, 
+		${0})`
+c.fillStyle = `rgb(
+		${0}, 
+		${255}, 
+		${0})`
+
+
+
+    c.strokeStyle = `rgb(
+		${0}, 
+		${0}, 
+		${255})`
+c.fillStyle = `rgb(
+		${0}, 
+		${0}, 
+		${255})`
+
+
+arrow({x:0, y:0, z:0}, {x:0, y:lengthOfAxisY, z:0}, {x:1, y:0, z:0}, 0*lengthOfAxisX/20,arrowAngle);
+c.strokeStyle = `rgb(
+		${0}, 
+		${0}, 
+		${255})`
+c.fillStyle = `rgb(
+		${0}, 
+		${0}, 
+		${255})`
+
+
+    c.strokeStyle = `rgb(
+		${0}, 
+		${0}, 
+		${255})`
+c.fillStyle = `rgb(
+		${0}, 
+		${0}, 
+		${255})`
+
+arrow({x:0, y:0, z:0}, {x:0, y:0, z:lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisX/20,arrowAngle);
+
+
+
+arrow({x:lengthOfAxisX, y:lengthOfAxisY, z:lengthOfAxisZ}, {x:0, y:0, z:-lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle);
+
+arrow({x:lengthOfAxisX, y:lengthOfAxisY, z:lengthOfAxisZ}, {x:0, y:-lengthOfAxisY, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle);
+
+arrow({x:lengthOfAxisX, y:lengthOfAxisY, z:lengthOfAxisZ}, {x:-lengthOfAxisX, y:0, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisX/20,arrowAngle);
+
+arrow({x:lengthOfAxisX, y:0, z:0}, {x:0, y:lengthOfAxisY, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle);
+
+arrow({x:lengthOfAxisX, y:0, z:0}, {x:0, y:0, z:lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle);
+
+arrow({x:0, y:lengthOfAxisY, z:0}, {x:lengthOfAxisX, y:0, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle);
+
+arrow({x:0, y:lengthOfAxisY, z:0}, {x:0, y:0, z:lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle);
+
+arrow({x:0, y:0, z:lengthOfAxisZ}, {x:lengthOfAxisX, y:0, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle);
+
+arrow({x:0, y:0, z:lengthOfAxisZ}, {x:0, y:lengthOfAxisY, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle);
+
+//Drawing the trail
+if(showPath == true){
+trailNumber = 0;
+while(trailNumber < numberOfElements){
+//Draw Path
+if(all_shown == true || paths_shown.includes(trailNumber) == true){
+
+		trail(trailNumber, trail_thickness, trailColor[trailNumber].R, trailColor[trailNumber].G, trailColor[trailNumber].B);
+}
+
+trailNumber++;	
+}
+}
+sortNumber = 0;
+		while(sortNumber < numberOfElements){
+//Balls
+//Closer objects in front
+sorted_by_distance[sortNumber] = {position:subtract(position[sortNumber], center), angular_position:angular_position[sortNumber], radius:radius[sortNumber], color:color[sortNumber], half1:half1[sortNumber], half2:half2[sortNumber], distance:magnitude(subtract(viewingPosition, position[sortNumber]))};
+    sortNumber++;
+    }	
+sorted_by_distance.sort(function(a, b){return b.distance - a.distance;});
+
+var ballNumber = 0;
+while(ballNumber < numberOfElements){
+
+
+//Draw Sphere
+c.fillStyle = `rgb(
+		${sorted_by_distance[ballNumber].color.R}, 
+		${sorted_by_distance[ballNumber].color.G}, 
+		${sorted_by_distance[ballNumber].color.B})`	
+c.strokeStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`
+		c.lineWidth = 1;
+
+//icosphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), icosphereRecursion);
+//PatternedIcosphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), icosphereRecursion, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
+//UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks);
+//Patterned_UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
+Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions);
+//Patterned_Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
+
+ballNumber++;
+}
+
+
+
+//Drawing the vector field 
+if(showField == true){
+    var v = 0;
+while(v < vectorField.length)
+{
+if(equalFieldLines == true){
+//arrow: Position, Vector, Axis of rotation of arrow end, arrow end length, angle of arrow end
+//Axis must be perpendicular for it to look reasonable
+c.fillStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`	
+c.strokeStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`
+arrow(vectorPosition[v], scale(normalize(vectorField[v]),0.005), normalize(cross(vectorField[v], {x:1, y:1, z:1})), magnitude(scale(normalize(vectorField[v]),0.005))/10,arrowAngle)
+}
+else{
+c.fillStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`	
+c.strokeStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`    
+arrow(vectorPosition[v], scale(vectorField[v],0.003), normalize(cross(vectorField[v], {x:1, y:1, z:1})), magnitude(scale(vectorField[v],0.001))/10, arrowAngle)
+}
+v++;
+}}
+
+//Drawing the electric field lines
+if(showSurroundingField == true){
+var idraw;
+var jdraw;
+var kdraw;
+idraw = 0;
+while(idraw < numberOfElements){
+jdraw = 0;
+while(jdraw < surfacePoints){
+kdraw = scaleLines;
+while(kdraw < numberOfLines){
+	c.strokeStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`
+if(charge[idraw]>0){
+c.lineWidth = 2;
+c.beginPath();
+c.moveTo(Sizing * perspective(linesSurround[idraw][jdraw][kdraw-scaleLines], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(linesSurround[idraw][jdraw][kdraw-scaleLines], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.lineTo(Sizing * perspective(linesSurround[idraw][jdraw][kdraw], viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(linesSurround[idraw][jdraw][kdraw], viewingPosition, viewingAngle, displaySurfacePosition).y);
+c.stroke();
+}
+kdraw+=scaleLines;}
+jdraw++;}
+idraw++;}}
+
+
+
+//Maxwell-Boltzmann distribution
+if(find_Maxwell_Boltzmann_distribution == true){
+
+c.lineWidth = 1;
+c.fillStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`	
+c.strokeStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`    
+
+
+arrow2D({x:2600, y:1000, z:0}, {x:1200, y:0, z:0}, 30, arrowAngle);
+
+arrow2D({x:2600, y:1000, z:0}, {x:0, y:-800, z:0}, 30, arrowAngle);
+
+var numberPerGroup = [];
+var probability_density_per_group = [];
+
+var groups = 0;
+while(groups < numberOfGroups){
+numberPerGroup[groups] = 0;
+
+var search = 0;
+while(search < numberOfElements){
+
+if(magnitude(velocity[search]) >= (groups)/numberOfGroups * maxVelocity && magnitude(velocity[search]) < (groups + 1)/numberOfGroups * maxVelocity){
+//If there a velocity in this range, you add one to the number in the group
+numberPerGroup[groups]++;
+}
+
+search++;
+}
+groups++;
+}
+
+var p = 0;
+while(p < numberOfGroups){
+//This gives the probability density, which the Maxwell Boltzmann also tries to find based on the macroscopic conditions and the particle mass. This is equal to the probabiltiy (numberPerGroup/numberOfElements), divided by the difference in speed per section of the histogram (maxVelocity/numberOfGroups)
+probability_density_per_group[p] = (numberPerGroup[p]/numberOfElements)/(maxVelocity/numberOfGroups);
+p++;
+}
+
+var origin = {x:2600, y:1000};
+var plotGroups = 0;
+while(plotGroups < numberOfGroups){
+    c.beginPath();
+c.moveTo(origin.x + plotGroups/numberOfGroups * totalLength, origin.y);
+c.lineTo(origin.x + plotGroups/numberOfGroups * totalLength, origin.y - totalHeight * probability_density_per_group[plotGroups]/maxProbability);
+c.stroke();
+c.fill();
+c.lineTo(origin.x + (plotGroups + 1)/numberOfGroups * totalLength, origin.y -  totalHeight * probability_density_per_group[plotGroups]/maxProbability);
+c.stroke();
+c.fill();
+c.lineTo(origin.x + (plotGroups + 1)/numberOfGroups * totalLength, origin.y);
+c.stroke();
+c.fill();
+
+plotGroups++;    
+}
+
+var speed_list = [];
+var energy_list = [];
+
+var t = 0;
+while(t < numberOfElements){
+speed_list[t] = magnitude(velocity[t]); 
+energy_list[t] = 1/2 * mass[t] * Math.pow(speed_list[t], 2);
+
+t++;
+}
+
+c.font = "32px georgia";
+
+var mean_speed = mean(speed_list);
+var RMS_speed = root_mean_square(speed_list)
+var maximum_speed = speed_list.sort(function(a, b){return a - b;})[speed_list.length - 1];
+var particle_mass = mass[0];
+var particle_radius = radius[0];
+var total_energy = sum(energy_list);
+var temperature = 1/3 * particle_mass * Math.pow(RMS_speed, 2)/Boltzmann_Constant;
+temperature_original = temperature;
+var volume = box.width * box.height * box.depth;
+function Maxwell_Boltzmann_Distribution(m, v, T){
+var result = Math.sqrt(2/Pi) * Math.pow(m/(Boltzmann_Constant * T), 3/2) * Math.pow(v, 2) * Math.pow(e, (-m * Math.pow(v, 2)/(2 * Boltzmann_Constant * T)));
+
+return result;
+}
+
+var Maxwell_Boltzmann_Distribution_Points = [];
+
+var velocities = 0;
+while(velocities < maxVelocity){
+
+    c.fillStyle = `rgb(
+		${255}, 
+		${0}, 
+		${0})`	
+
+		Maxwell_Boltzmann_Distribution_Points.push({x:velocities, y:Maxwell_Boltzmann_Distribution(particle_mass, velocities, temperature)});
+	c.beginPath();			
+		c.arc(origin.x + Maxwell_Boltzmann_Distribution_Points[Maxwell_Boltzmann_Distribution_Points.length - 1].x/maxVelocity * totalLength, origin.y - totalHeight * Maxwell_Boltzmann_Distribution_Points[Maxwell_Boltzmann_Distribution_Points.length - 1].y/maxProbability, 1, 0.0, 2.0 * Pi); 
+    c.closePath();
+		c.fill();		    
+
+		velocities += 1;    
+}
+
+var mean_speed_text = "Mean speed = " + mean_speed + " m/s";
+var RMS_speed_text =  "RMS speed = "  + RMS_speed + " m/s";
+var maximum_speed_text = "Maximum speed = " + maximum_speed + " m/s";
+var particle_mass_text = "Particle mass = " + particle_mass + " kg";
+var particle_radius_text = "Particle radius = " + particle_radius + " m";
+var total_energy_text = "Total energy = " + total_energy + " J";
+var temperature_text = "Temperature = " + temperature + " K";
+var volume_text = "Volume = " + volume + " m^3";
+var pressure_text = "Pressure = " + Math.round(100*pressure/100000)/100 + " Bar";
+var number_of_particles_text = "Number of particles = " + numberOfElements;
+var x_axis_text = "Speed (m/s)";
+var y_axis_text = "Probability Density (s/m)";
+
+c.fillStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`
+var xshiftx =0;
+var start_height  = 1100;
+var separate_text = 60;
+c.fillText(mean_speed_text, xshiftx+2800, start_height);
+c.fillText(RMS_speed_text, xshiftx+2800, start_height + 1 * separate_text);
+c.fillText(maximum_speed_text, xshiftx+2800, start_height + 2 * separate_text);
+c.fillText(particle_mass_text, xshiftx+2800, start_height + 3 * separate_text);
+c.fillText(particle_radius_text, xshiftx+2800, start_height + 4 * separate_text);
+c.fillText(total_energy_text, xshiftx+2800, start_height + 5 * separate_text);
+c.fillText(temperature_text, xshiftx+2800, start_height + 6 * separate_text);
+c.fillText(volume_text, xshiftx+2800, start_height + 7 * separate_text);
+c.fillText(pressure_text, xshiftx+2800, start_height + 8 * separate_text);
+c.fillText(number_of_particles_text, xshiftx+2800, start_height + 9 * separate_text);
+//Label
+c.font = "50px georgia";
+c.fillText("Maxwell-Boltzmann Distribution",2750,start_height - 900);
+c.font = "40px georgia";
+c.fillStyle = `rgb(
+		${255}, 
+		${0}, 
+		${0})`	
+c.fillText("____",3150,start_height - 720);
+c.fillStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`	
+c.fillText("             Predictied distribution",3150,start_height - 700);
+
+c.font = "32px georgia";
+
+c.fillText(x_axis_text, xshiftx+3555, 1070);
+c.fillText(y_axis_text, xshiftx+2640, 300);
+
+var max_label_x = 1200/totalLength * maxVelocity;
+var max_label_y = 800/totalHeight * maxProbability;
+
+var label_x = 0;
+while(label_x <= max_label_x){
+	
+    c.beginPath();
+c.moveTo(origin.x + label_x/maxVelocity	* totalLength, origin.y - 10);
+c.lineTo(origin.x + label_x/maxVelocity	* totalLength, origin.y + 10);
+c.stroke();
+c.fill();
+
+c.font = "24px georgia";
+
+c.fillText(label_x, origin.x + label_x/maxVelocity	* totalLength, origin.y + 30);
+
+label_x += separation_of_x_axis_labels;
+}
+
+var label_y = 0;
+while(label_y <= max_label_y){
+	
+    c.beginPath();
+c.moveTo(origin.x - 10, origin.y - label_y/maxProbability * totalHeight);
+c.lineTo(origin.x + 10, origin.y - label_y/maxProbability * totalHeight);
+c.stroke();
+c.fill();
+
+c.font = "24px georgia";
+
+c.fillText(Math.round(label_y * 10000)/10000, origin.x - 100, origin.y - label_y/maxProbability * totalHeight);
+
+label_y += separation_of_y_axis_labels;
+}}
+var text_spacing = 200;
+var starting_text_y = 1500;
+c.font = "50px georgia";
+c.fillStyle = `rgb(
+		${255}, 
+		${255}, 
+		${255})`
+        var time_in_days = time/3600/24;	
+		var time_in_years = time/3600/24/365.256;
+		var rounded_time_in_years = Math.round(time/3600/24/365.256 * 100)/100;
+
+function addDaysToDate(inputDate, daysToAdd) {
+  // Create a new Date object from the input date to avoid mutating the original
+  const date = new Date(inputDate);
+  
+  // Add the specified number of days to the date
+  date.setDate(date.getDate() + daysToAdd);
+  
+  // Return the new date
+  return date;
+}
+
+// Example usage:
+const inputDate = '2024-10-26'; // format: 'YYYY-MM-DD'
+const daysToAdd = Math.floor(time_in_days);
+const newDate = addDaysToDate(inputDate, daysToAdd);
+
+var formatted_date = newDate.toISOString().split('T')[0]; // Outputs the new date in 'YYYY-MM-DD' format
+
+if(formatted_date == '2024-09-24'){timeStep = 0;}
+//c.fillText(formatted_date, 3000, starting_text_y - 2 * text_spacing);
+
+//c.fillText(rounded_distance_between_bennu_and_earth_in_astronomical_units + " AU", 3000, starting_text_y - text_spacing);
+/*
+c.font = "40px georgia";
+
+c.fillText("Cartesian velocity is (" + Math.round(velocityX_cartesian * 100)/100 + ", " + Math.round(velocityY_cartesian * 100)/100  + ", " + Math.round(velocityZ_cartesian * 100)/100 + ") " + "Cartesian position is (" + Math.round(positionX_cartesian * 100)/100 + ", " + Math.round(positionY_cartesian * 100)/100 + ", " + Math.round(positionZ_cartesian * 100)/100 + ")", 500, starting_text_y - 3 * text_spacing);
+
+c.fillText("Keplerian velocity is (" + Math.round(velocityX_keplerian * 100)/100+ ", " + Math.round(velocityY_keplerian * 100)/100  + ", " + Math.round(velocityZ_keplerian * 100)/100 + ") " + "Cartesian position is (" + Math.round(positionX_keplerian * 100)/100 + ", " + Math.round(positionY_keplerian * 100)/100 + ", " + Math.round(positionZ_keplerian * 100)/100 + ")", 500, starting_text_y - 4 * text_spacing);
+*/
+
+c.font = "40px georgia";
+/*
+c.fillText("EC = " + BB2_orbital_elements.EC + ", A = " + BB2_orbital_elements.A + ", IN = " + BB2_orbital_elements.IN + ", OM = " + BB2_orbital_elements.OM + ", W = " + BB2_orbital_elements.W + ", TA = " + BB2_orbital_elements.TA + ", MA = " +  BB2_orbital_elements.MA, 100, starting_text_y - 4 * text_spacing);
+*/
+/*
+var ratio_of_speed = Math.round(magnitude(velocity[1])/speed_of_light * 10)/10;
+c.fillText(ratio_of_speed + " c", 3000, 1500);*/
+
+//c.fillText(vix, 2000, starting_text_y - 4 * text_spacing);
+
+/*c.fillText("Distance between satelite and asteroid = " + Math.round(magnitude(subtract(position[10], position[11]))/1000) + " kilometers", 2000, starting_text_y - 5 * text_spacing);
+*/
+/*c.fillText("Closest distance between satelite and asteroid = " + closest_satelite.distance/1000 + " kilometers on " + addDaysToDate(inputDate, Math.floor(closest_satelite.time/3600/24)).toISOString().split('T')[0]
+ + ".",  2000, starting_text_y - 6 * text_spacing);*/
+
+
+//c.fillText("EC = " + orbital_elements_of_lambert_object.EC + ", A = " + orbital_elements_of_lambert_object.A + ", IN = " + orbital_elements_of_lambert_object.IN + ", OM = " + orbital_elements_of_lambert_object.OM + ", W = " + orbital_elements_of_lambert_object.W + ", TA = " + orbital_elements_of_lambert_object.TA + ", MA = " +  orbital_elements_of_lambert_object.MA, 100, starting_text_y - 4 * text_spacing);
+
+//var closest_text = Math.round(closest_bennu.distance/1.495978707e11 * 100000)/100000;
+/*var closest_text = Math.round(closest_bennu.distance/6378137 * 1000000000)/1000000000;
+var closest_Date = addDaysToDate(inputDate, Math.floor(closest_bennu.time/3600/24)); 
+var formatted_closest_date = closest_Date.toISOString().split('T')[0];
+var closest_time_text = formatted_closest_date;
+*/
+
+//c.fillText(closest_text + " on " + closest_time_text, 3000, starting_text_y);
+//c.fillText(v_delta*1000 + " mm/s", 3000, starting_text_y - 5 * text_spacing);
+//c.fillText("(" + v_f.x + ", " + v_f.y + ", " + v_f.z + ")", 2250, starting_text_y - 6 * text_spacing);
+
+if(calculate_energy == true){
+var total_energy = 0;
+var k = 0;//was e,  but that was hindering euler's number e. now it works correctly
+while(k < numberOfElements){
+total_energy = total_energy + 1/2 * mass[k] * Math.pow(magnitude(velocity[k]), 2);
+e++;
+}
+c.fillText(total_energy, 3000, 1750);
+}
+
+//Perihelion
+
+if(calculate_perihelion == true){
+
+if(perihelion_of_mercury_list.length > 0){
+var current_perihelion_magnitude = magnitude(perihelion_of_mercury_list[perihelion_of_mercury_list.length - 1][0]);
+//var perihelion_time = perihelion_of_mercury_list[perihelion_of_mercury_list.length - 1];
+c.fillText(current_perihelion_magnitude + " meters", 3000, starting_text_y - 3 * text_spacing);
+c.fillStyle = `rgb(
+		${255}, 
+		${255}, 
+		${255})`
+
+        c.strokeStyle = `rgb(
+		${255}, 
+		${255}, 
+		${255})` 
+
+        c.lineWidth = 10;
+        arrow(position[0], perihelion_of_mercury_list[perihelion_of_mercury_list.length - 1][0], normalize(cross(perihelion_of_mercury_list[perihelion_of_mercury_list.length - 1][0], {x:0, y:1, z:0})), magnitude(perihelion_of_mercury_list[perihelion_of_mercury_list.length - 1][0])/10, arrowAngle);
+
+c.fillText(number_of_perihelions, 3000,  starting_text_y - 4 * text_spacing);
+
+var precession_rate = magnitude(precession_of_mercury) * 206265 * 3155760000;
+c.fillText(precession_rate + " arc seconds per julian century", 2500,  starting_text_y - 5 * text_spacing);
+var angle_shift_text = angle_shift;
+c.fillText(angle_shift_text + " radians", 2750,  starting_text_y - 6 * text_spacing);
+
+}
+
+}
+//distance_with_time_table.push([time, magnitude(subtract(position[11], position[10]))]);
+if(plot_distance == true){
+c.fillStyle = `rgb(
+		${255}, 
+		${255}, 
+		${255})`
+c.strokeStyle = `rgb(
+		${255}, 
+		${255}, 
+		${255})`
+        c.lineWidth = 2;
+arrow2D(plot_corner, {x:x_axis_length, y:0, z:0}, 50, arrowAngle);
+arrow2D(plot_corner, {x:0, y:-y_axis_length, z:0}, 50, arrowAngle);
+
+var distance_loop = 0;
+while(distance_loop < distance_with_time_table.length-1){
+c.beginPath();			
+c.arc(plot_corner.x + distance_with_time_table[distance_loop][0]/(time_length * 365.25 * 24 * 3600) * x_axis_length, plot_corner.y - distance_with_time_table[distance_loop][1]/(maximum_distance*1.495978707e11) * y_axis_length, 2.5, 0, 2 * Pi); 
+c.closePath();
+c.fill();
+
+distance_loop++;
+}
+
+if(time > 115689600){/*timeStep = 0*/}
+}
+
+
+incrementor+=increment_step;
+if(calculate_trajectory == true){
+if(incrementor % increment_change == 0 && incrementor >= increment1 && increment_step == 1){
+//trajectory.push([formatted_date, "Position", position.x[10], position[10].y, position[10].z, "R", subtract(position[10], position[0]).x,  subtract(position[10], position[0]).y,  subtract(position[10], position[0]).z, "Velocity", velocity[10].x, velocity[10].y, velocity[10].z]);
+//trajectory.push(["Date: " + formatted_date, " Position: " + "(" + position[10].x, position[10].y, position[10].z + ")", " R: " + "(" + subtract(position[10], position[0]).x,  subtract(position[10], position[0]).y,  subtract(position[10], position[0]).z + ")", " Velocity: " + "(" + velocity[10].x, velocity[10].y, velocity[10].z +")"]);
+//trajectory.push(["Date: " + formatted_date, " Position: " + "(" + position[10].x, position[10].y, position[10].z + ")", " R: " + "(" + subtract(position[10], position[0]).x,  subtract(position[10], position[0]).y,  subtract(position[10], position[0]).z + ")", " Velocity: " + "(" + velocity[10].x, velocity[10].y, velocity[10].z +")", "R_mag: " + magnitude(subtract(position[10], position[0])), "V_mag: " + magnitude(velocity[10])]);
+//trajectory.push(["Date: " + formatted_date, " R_mag: " + magnitude(subtract(position[10], position[0])), " V_mag: " + magnitude(velocity[10])]);
+trajectory.push([formatted_date, time, magnitude(subtract(position[10], position[3]))]);
+//trajectory = trajectory + formatted_date + "," + magnitude(subtract(position[10], position[0]))  + "," +  magnitude(velocity[10]) + "," + "\n";
+
+}
+}
+/*
+var t_increment = 0;
+while(t_increment < trajectory.length){
+	c.font = "30px georgia";
+
+//c.fillText(trajectory[t_increment], 50, starting_text_y - (7 - t_increment/2)  * text_spacing);
+c.fillText(trajectory[t_increment], 25, starting_text_y - (7 - t_increment/3)  * text_spacing);
+
+t_increment++;
+}
+*/
+if(calculate_trajectory == true){
+if(incrementor > increment2){
+timeStep = 0;
+increment_step = 0;
+c.font = "30px georgia";
+/*
+c.fillText(trajectory[0], 50, starting_text_y - 6 * text_spacing);
+c.fillText(trajectory[1], 50, starting_text_y - 5 * text_spacing);
+c.fillText(trajectory[2], 50, starting_text_y - 4 * text_spacing);
+c.fillText(trajectory[3], 50, starting_text_y - 3 * text_spacing);
+c.fillText(trajectory[4], 50, starting_text_y - 2 * text_spacing);
+*/
+//sendVariableToServer(trajectory);   
+
+//showAlert(CSV_convertor(trajectory, ["Date", "Time", "Distance of Asteroid YR4 and Earth"]));
+
+}
+
+
+}
+
+
+//if(time > 365.25 * 9 * 3600 * 24 && truth_once == false){
+if(time > 365.25 * 800 * 3600 * 24 && truth_once == false){
+truth_once = true;
+//showAlert(v_delta + ", " + closest_text);
+showAlert(CSV_convertor(orbital_periods, ["Periods"]));
+timeStep = 0;
+}
+
+
+
+
+
+window.myButton1 = function(){
+button1++;
+var xe = 0;
+while(xe<numberOfElements){
+radius[xe] = radii[button1%(elements.length)];
+mass[xe] = masses[button1%(elements.length)];
+color[xe] = colors[button1%(elements.length)];
+velocity[xe] = scale(velocity[xe], Math.sqrt(masses[(button1-1)%(elements.length)]/masses[(button1)%(elements.length)]))
+xe++;
+}
+
+}
+
+window.myTemperatureSlider = function(){
+var slider = document.getElementById("temperature_slider");
+  
+  var myTemperature = Math.round(slider.value * 100)/100;
+  
+  document.getElementById("tempDisp").innerText = myTemperature + "\u00B0 K.";
+  
+  var xe = 0;
+while(xe<numberOfElements){
+
+velocity[xe] = scale(velocity[xe], Math.sqrt(myTemperature/temperature_original));
+xe++;
+}
+
+}
+
+window.myVolumeSlider = function(){
+var slider = document.getElementById("volume_slider");
+  
+  var myDispVolume = slider.value;
+  
+  document.getElementById("volDisp").innerText = myDispVolume+"e-27 cubic meters.";
+  var myVolume = myDispVolume * Math.pow(10,-27);
+
+  box.width = Math.cbrt(myVolume);
+  box.height = Math.cbrt(myVolume);
+  box.depth = Math.cbrt(myVolume);
+}
+
+
+c.font = "100px georgia";
+
+c.fillStyle = `rgb(
+  ${0}, 
+  ${0}, 
+  ${0})`
+element = elements[button1%(elements.length)];
+
+
+c.fillText(element, 1000, 1000);
+
+
+}
+
+
+
+	
+	function update() {
+		simulate();
+		draw();
+		requestAnimationFrame(update);
+	}
+
+
+	update();
+
+
+
+	
+ </script> 
+ </body>
+ </html>
