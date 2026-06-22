@@ -1,0 +1,48 @@
+a{color:green;
+    font-family:georgia;
+    font-weight:bold;
+    font-size:22px !important;
+    position:relative;
+    }
+    
+    a:hover{color:red;}
+    table{
+    border-spacing:10;
+    width:100%;
+    align:center;
+    
+    }
+
+    td{
+    align:center;
+    
+    }
+    tr{
+    align:center;  
+    }
+    img{
+    margin:auto;
+    }
+    
+    h1{
+     font-size:40;  
+     text-align:center;
+     font-style:italic;
+     color:white;
+    }
+    
+    p{
+    text-align:left;
+     color:black;
+    font-size:12px;
+    }
+    
+    button{
+padding:10px 24px;
+font-size:10px; 
+    }
+    body{
+    background-color:white;
+    font-size: 16px;
+    }
+
