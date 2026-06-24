@@ -38,8 +38,8 @@ border-spacing:10px;/*10;*/
      font-style:italic;
      color:black; 
     /*padding:0rem clamp(2rem, 8vw, 7.5rem);*/
-    padding-left:0rem clamp(2rem, 8vw, 7.5rem);
-    padding-right:0rem clamp(2rem, 8vw, 7.5rem);
+    padding-left:clamp(2rem, 8vw, 7.5rem);
+    padding-right:clamp(2rem, 8vw, 7.5rem);
 
     }
 
