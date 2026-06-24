@@ -45,7 +45,7 @@ border-spacing:10px;/*10;*/
 
     h2{
      /*font-size:40px;  */
-    font-size:clamp(calc(2.8rem*0.8), calc(4.6*0.8)vw,calc(7*0.8)rem);/*4.5rem;*/
+    font-size:clamp(calc(2.8rem*0.8), calc(4.6vw*0.8),calc(7rem*0.8));/*4.5rem;*/
      text-align:center;
      /*font-style:italic;*/
         font-style:normal;
