@@ -155,8 +155,8 @@ canvas.style.height = `${window.innerHeight}px`;
 //Test text variable
 
 var button1 = 0;
-var button2 = 0;
-var button3 = 0;
+//var button2 = 0;
+//var button3 = 0;
 
 //Mathematical operations
 function sum(A){
@@ -3230,6 +3230,14 @@ i++;}
 
 // Drawing
 function draw() {
+shiftright = -4.2/2.5 * boxScaled;
+//var shiftup = 7.5/2.5 * boxScaled;
+shiftup = 8/2.5 * boxScaled;
+
+viewingPosition = {x: -5e-1*boxScale + shiftright, y:1e-1*boxScale + shiftup, z:5e-1*boxScale};
+viewingAngle = {x:Pi/180 *  - 5, y:Pi/180 *  - 30, z:0};
+displaySurfacePosition = {x: 5e-1*boxScale + shiftright, y: -20e-1*boxScale + shiftup, z:30e-1*boxScale};
+box = {width:1e-1*boxScale, height:1e-1*boxScale, depth:1e-1*boxScale}
 
 
 //.*
@@ -3848,6 +3856,18 @@ timeStep = 0;
 
 
 
+	window.myButton1 = function(){
+//button1++;
+boxScaled *= 1.1; 
+
+}
+
+	window.myButton2 = function(){
+//button2++;
+boxScaled /= 1.1;
+
+}
+	
 /*
 
 window.myButton1 = function(){
@@ -3862,6 +3882,7 @@ xe++;
 }
 
 }
+
 
 window.myTemperatureSlider = function(){
 var slider = document.getElementById("temperature_slider");
