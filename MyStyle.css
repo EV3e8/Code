@@ -1,7 +1,7 @@
 a{color:green;
     font-family:georgia;
     font-weight:bold;
-    font-size:22px !important;
+    font-size:clamp(1.4rem, 2.3vw,3.5rem);/*2rem !important;/*22px !important;*/
     position:relative;
     }
     
@@ -25,7 +25,8 @@ a{color:green;
     }
     
     h1{
-     font-size:40px;  
+     /*font-size:40px;  */
+    font-size:clamp(2.8rem, 4.6vw,7rem);/*4.5rem;*/
      text-align:center;
      font-style:italic;
      color:black; 
@@ -35,7 +36,7 @@ a{color:green;
     text-align:left;
     color:black;
     /*font-size:12px;*/
-    font-size:2rem;/*1.25rem;/*30px;*/
+    font-size:clamp(1.4rem, 2.3vw,3.5rem);/*2rem;/*1.25rem;/*30px;*/
     }
     
     button{
