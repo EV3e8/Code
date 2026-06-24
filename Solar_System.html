@@ -30,7 +30,6 @@
 
 			<td ><a href = "Projects.html">Projects</a>
 
-
     </table>
   
   
@@ -39,34 +38,6 @@
 
 
 <!-- <Button> -->
-  <table>
-    <tr>
-      <td>
-  <button onclick = "myButton1()">Zoom In</button>
-</td>
-
-
-    <tr>
-      <td>
-  <button onclick = "myButton2()">Zoom Out</button>
-</td>
-
-<!--
-<td>
-  <input type="range" min="1" max="373.15" value="298.15" step="0.01" id="temperature_slider" oninput="myTemperatureSlider()">
-  <p>Temperature: <span id="tempDisp">298.15&deg K.</span></p>
-
-</td>
-
-<td>
-  <input type="range" min="5" max="20" value="14" id="volume_slider" oninput="myVolumeSlider()">
-  <p>Volume: <span id="volDisp">14e-27 cubic meters.</span></p>
-
-</td>
--->
-
-</tr>
-</table>
   <!--<table>
     <tr>
       <td>
@@ -155,8 +126,8 @@ canvas.style.height = `${window.innerHeight}px`;
 //Test text variable
 
 var button1 = 0;
-//var button2 = 0;
-//var button3 = 0;
+var button2 = 0;
+var button3 = 0;
 
 //Mathematical operations
 function sum(A){
@@ -1286,7 +1257,7 @@ return b;
 }
 
 //Shapes and curves
-function trail(n, thickness, r, g, b,viewingPosition, viewingAngle, displaySurfacePosition){
+function trail(n, thickness, r, g, b){
 var trailAllDimensions = [];
 trailAllDimensions[n] = []
 for(var trails = 0; trails < path[n].x.length; trails++ )
@@ -1801,7 +1772,7 @@ c.fill();
 	drawTri++;
 }
 }
-function Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions, viewingPosition, viewingAngle, displaySurfacePosition){
+function Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions){
 	var icosahedron = [];
 var t = (1 +  Math.sqrt(5))/2;
 
@@ -2994,7 +2965,7 @@ center = position[center_number];
 if(use_moving_object == false){
 center = {x:0, y:0, z:0};
 }
-if(step % Math.ceil(numSteps/_rate) == 0){
+if(step % Math.ceil(numSteps/trail_rate) == 0){
 if(showPath == true){
 var pathNumber = 0;
     while(pathNumber < numberOfElements){
@@ -3230,14 +3201,6 @@ i++;}
 
 // Drawing
 function draw() {
-shiftright = -4.2/2.5 * boxScale/10;//boxScaled;
-//var shiftup = 7.5/2.5 * boxScaled;
-shiftup = 8/2.5 * boxScale/10;//boxScaled;
-
-viewingPosition = {x: -5e-1*boxScale + shiftright, y:1e-1*boxScale + shiftup, z:5e-1*boxScale};
-viewingAngle = {x:Pi/180 *  - 5, y:Pi/180 *  - 30, z:0};
-displaySurfacePosition = {x: 5e-1*boxScale + shiftright, y: -20e-1*boxScale + shiftup, z:30e-1*boxScale};
-box = {width:1e-1*boxScale, height:1e-1*boxScale, depth:1e-1*boxScale}
 
 
 //.*
@@ -3366,7 +3329,7 @@ while(trailNumber < numberOfElements){
 //Draw Path
 if(all_shown == true || paths_shown.includes(trailNumber) == true){
 
-		trail(trailNumber, trail_thickness, trailColor[trailNumber].R, trailColor[trailNumber].G, trailColor[trailNumber].B,viewingPosition, viewingAngle, displaySurfacePosition);
+		trail(trailNumber, trail_thickness, trailColor[trailNumber].R, trailColor[trailNumber].G, trailColor[trailNumber].B);
 }
 
 trailNumber++;	
@@ -3400,7 +3363,7 @@ c.strokeStyle = `rgb(
 //PatternedIcosphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), icosphereRecursion, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
 //UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks);
 //Patterned_UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
-Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions,viewingPosition, viewingAngle, displaySurfacePosition);
+Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions);
 //Patterned_Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
 
 ballNumber++;
@@ -3856,24 +3819,6 @@ timeStep = 0;
 
 
 
-	window.myButton1 = function(){
-//button1++;/
-//boxScaled /= 2;//*= 2;//1.1; 
-boxScale = boxScale / 2;
-
-}
-
-	window.myButton2 = function(){
-//button2++;
-/*//boxScaled *= 2; ////*= 2;//1.1*/
-boxScale = boxScale * 2;
-}
-c.fillStyle = `rgb(
-  ${255}, 
-  ${255}, 
-  ${255})`
-c.fillText(boxScale, 1000, 1000);
-
 /*
 
 window.myButton1 = function(){
@@ -3888,7 +3833,6 @@ xe++;
 }
 
 }
-
 
 window.myTemperatureSlider = function(){
 var slider = document.getElementById("temperature_slider");
@@ -3929,7 +3873,7 @@ c.fillStyle = `rgb(
 element = elements[button1%(elements.length)];
 
 
-//c.fillText(element, 1000, 1000);
+c.fillText(element, 1000, 1000);
 
 
 }
