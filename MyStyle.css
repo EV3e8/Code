@@ -7,18 +7,25 @@ a{color:green;
     
     a:hover{color:red;}
     table{
-    border-spacing:10;
+    /*border-spacing:10;*/
+            /* text-align:center;*/
+border-spacing:10px;/*10;*/
     width:100%;
-    align:center;
+    /*align:center;*/
+             text-align:center;
+
     
     }
 
     td{
-    align:center;
-    
+    /*align:center;*/
+         text-align:center;
+
     }
     tr{
-    align:center;  
+    /*align:center;  */
+             text-align:center;
+
     }
     img{
     margin:auto;
@@ -30,16 +37,22 @@ a{color:green;
      text-align:center;
      font-style:italic;
      color:black; 
-    padding:0rem clamp(2rem, 8vw, 7.5rem);
+    /*padding:0rem clamp(2rem, 8vw, 7.5rem);*/
+    padding-left:0rem clamp(2rem, 8vw, 7.5rem);
+    padding-right:0rem clamp(2rem, 8vw, 7.5rem);
+
     }
 
     h2{
      /*font-size:40px;  */
-    font-size:clamp(calc(2.8*0.7)rem, calc(4.6*0.7)vw,calc(7*0.7)rem);/*4.5rem;*/
+    font-size:clamp(calc(2.8rem*0.7), calc(4.6*0.7)vw,calc(7*0.7)rem);/*4.5rem;*/
      text-align:center;
      font-style:italic;
      color:black; 
-    padding:0rem clamp(2rem, 8vw, 7.5rem);
+    /*padding:0rem clamp(2rem, 8vw, 7.5rem);*/
+    padding-left:clamp(2rem, 8vw, 7.5rem);
+        padding-right:clamp(2rem, 8vw, 7.5rem);
+
     }
     
     p{
@@ -47,7 +60,10 @@ a{color:green;
     color:black;
     /*font-size:12px;*/
     font-size:clamp(1.4rem, 2.3vw,3.5rem);/*2rem;/*1.25rem;/*30px;*/
-    padding:0rem clamp(2rem, 8vw, 7.5rem);
+    /*padding:0rem clamp(2rem, 8vw, 7.5rem);*/
+    padding-left: clamp(2rem, 8vw, 7.5rem);
+        padding-right: clamp(2rem, 8vw, 7.5rem);
+
     }
     
     button{
