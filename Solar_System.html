@@ -1286,7 +1286,7 @@ return b;
 }
 
 //Shapes and curves
-function trail(n, thickness, r, g, b){
+function trail(n, thickness, r, g, b,viewingPosition, viewingAngle, displaySurfacePosition){
 var trailAllDimensions = [];
 trailAllDimensions[n] = []
 for(var trails = 0; trails < path[n].x.length; trails++ )
@@ -1801,7 +1801,7 @@ c.fill();
 	drawTri++;
 }
 }
-function Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions){
+function Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions, viewingPosition, viewingAngle, displaySurfacePosition){
 	var icosahedron = [];
 var t = (1 +  Math.sqrt(5))/2;
 
@@ -2994,7 +2994,7 @@ center = position[center_number];
 if(use_moving_object == false){
 center = {x:0, y:0, z:0};
 }
-if(step % Math.ceil(numSteps/trail_rate) == 0){
+if(step % Math.ceil(numSteps/_rate) == 0){
 if(showPath == true){
 var pathNumber = 0;
     while(pathNumber < numberOfElements){
@@ -3400,7 +3400,7 @@ c.strokeStyle = `rgb(
 //PatternedIcosphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), icosphereRecursion, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
 //UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks);
 //Patterned_UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
-Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions);
+Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions,viewingPosition, viewingAngle, displaySurfacePosition);
 //Patterned_Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
 
 ballNumber++;
