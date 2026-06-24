@@ -45,7 +45,20 @@ border-spacing:10px;/*10;*/
 
     h2{
      /*font-size:40px;  */
-    font-size:clamp(calc(2.8rem*0.7), calc(4.6*0.7)vw,calc(7*0.7)rem);/*4.5rem;*/
+    font-size:clamp(calc(2.8rem*0.8), calc(4.6*0.8)vw,calc(7*0.8)rem);/*4.5rem;*/
+     text-align:center;
+     /*font-style:italic;*/
+        font-style:normal;
+     color:black; 
+    /*padding:0rem clamp(2rem, 8vw, 7.5rem);*/
+    padding-left:clamp(2rem, 8vw, 7.5rem);
+        padding-right:clamp(2rem, 8vw, 7.5rem);
+
+    }
+
+    h3{
+     /*font-size:40px;  */
+    font-size:clamp(calc(2.8rem*0.7), calc(4.6vw*0.7),calc(7rem*0.7));/*4.5rem;*/
      text-align:center;
      font-style:italic;
      color:black; 
