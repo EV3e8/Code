@@ -3230,9 +3230,9 @@ i++;}
 
 // Drawing
 function draw() {
-shiftright = -4.2/2.5 * boxScaled;
+shiftright = -4.2/2.5 * boxScale/10;//boxScaled;
 //var shiftup = 7.5/2.5 * boxScaled;
-shiftup = 8/2.5 * boxScaled;
+shiftup = 8/2.5 * boxScale/10;//boxScaled;
 
 viewingPosition = {x: -5e-1*boxScale + shiftright, y:1e-1*boxScale + shiftup, z:5e-1*boxScale};
 viewingAngle = {x:Pi/180 *  - 5, y:Pi/180 *  - 30, z:0};
