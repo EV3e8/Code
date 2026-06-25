@@ -20,9 +20,9 @@
   <table > 
     <tr>
     <!-- <td ><a href = "Second Website homepage.html">Homepage</a>
-      <!-- <td ><a href = "Ideal Gas with Interaction.html">Ideal Gas</a>
+       <td ><a href = "Ideal Gas with Interaction.html">Ideal Gas</a>
   
-      <!--<td ><a href = "Project Portfolio.html">Project Portfolio</a>!-->
+      <td ><a href = "Project Portfolio.html">Project Portfolio</a>-->
 
 		<td ><a href = "index.html">Homepage</a></td>
 		<!--	<td ><a href = "Ideal_Gas_Interactive.html">Ideal Gas</a>!-->
@@ -36,6 +36,25 @@
 <canvas id="myCanvas" style="border:0px solid"></canvas>
 
 
+  <table>
+    <tr>
+      <td>
+  <!--<button onclick = "myButton1()">Zoom In</button>-->
+  <!--<button onclick = "myButton1()">Zoom In</button>-->
+    <button onmousedown = "myButton1()" onmouseup="stopmyButton1()" onmouseleave="stopmyButton1()">Zoom In</button>
+
+</td>
+
+
+    <tr>
+      <td>
+  <!--<button onclick = "myButton2()">Zoom Out</button>-->
+  <button onmousedown = "myButton2()" onmouseup="stopmyButton2()" onmouseleave="stopmyButton2()">Zoom Out</button>
+</td>
+
+
+</tr>
+</table>
 
 <!-- <Button> -->
   <!--<table>
@@ -124,7 +143,7 @@ canvas.style.height = `${window.innerHeight}px`;
 
 
 //Test text variable
-
+var zoomValue = 1;
 var button1 = 0;
 var button2 = 0;
 var button3 = 0;
@@ -843,8 +862,8 @@ var angular_position = [];
 var angular_velocity = [];
 var torque = [];
 var moment_of_Inertia = [];
-var timeStep = 100;//0.5e-15;
-var numSteps = 10000;//100; 
+var timeStep = 2000//1000;//100;//0.5e-15;
+var numSteps = 5000//10000;//1000;//10000;//100; 
 var numberOfElements = 10;//200;
 var Gravitational_Force = [];
 var Coulomb_Force = [];
@@ -937,7 +956,7 @@ var half2 = [];
 var icosphereRecursion = 4;
 var number_of_slices = 20;
 var number_of_stacks = 20;
-var number_of_subdivisions  = 1;
+var number_of_subdivisions  = 3;//1;
 var pvelocity = [];
 var calculate_energy = false;
 //Orbital periods
@@ -999,7 +1018,7 @@ var calculateForce = false;
 
 //Path
 var trailColor = [];
-var trail_thickness = 4;
+var trail_thickness = 3;//4;
 var showPath = true;//false;
 var path = [];
 var trail_rate = 20;
@@ -1257,7 +1276,7 @@ return b;
 }
 
 //Shapes and curves
-function trail(n, thickness, r, g, b){
+function trail(n, thickness, r, g, b,viewingPosition, viewingAngle, displaySurfacePosition){
 var trailAllDimensions = [];
 trailAllDimensions[n] = []
 for(var trails = 0; trails < path[n].x.length; trails++ )
@@ -1277,7 +1296,7 @@ c.lineTo(Sizing * perspective(trailAllDimensions[n][lines], viewingPosition, vie
 c.stroke();}
 }
 }
-function UV_sphere(position, radius, axis, angle, slices, stacks){
+function UV_sphere(position, radius, axis, angle, slices, stacks,viewingPosition, viewingAngle, displaySurfacePosition){
 var vertices = [];
 var faces = [];
 var sortFaces = [];
@@ -1386,7 +1405,7 @@ c.fill();
 drawFaces++;
 }
 }
-function Patterned_UV_sphere(position, radius, axis, angle, slices, stacks, half1, half2){
+function Patterned_UV_sphere(position, radius, axis, angle, slices, stacks, half1, half2,viewingPosition, viewingAngle, displaySurfacePosition){
     var vertices = [];
 var faces = [];
 var sortFaces = [];
@@ -1528,7 +1547,7 @@ c.fill();
 
 drawFaces++;
 }}
-function icosphere(position, radius, axis, angle, recursionLevel){
+function icosphere(position, radius, axis, angle, recursionLevel,viewingPosition, viewingAngle, displaySurfacePosition){
 var icosahedron = [];
 var t = (1 +  Math.sqrt(5))/2;
 
@@ -1644,7 +1663,7 @@ c.fill();
 	drawTri++;
 }
 }
-function PatternedIcosphere(position, radius, axis, angle, recursionLevel, half1, half2){
+function PatternedIcosphere(position, radius, axis, angle, recursionLevel, half1, half2,viewingPosition, viewingAngle, displaySurfacePosition){
 var icosahedron = [];
 var t = (1 +  Math.sqrt(5))/2;
 
@@ -1772,7 +1791,7 @@ c.fill();
 	drawTri++;
 }
 }
-function Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions){
+function Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions,viewingPosition, viewingAngle, displaySurfacePosition){
 	var icosahedron = [];
 var t = (1 +  Math.sqrt(5))/2;
 
@@ -1939,7 +1958,7 @@ c.fill();
 }
 
 }
-function Patterned_Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions, half1, half2){
+function Patterned_Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions, half1, half2,viewingPosition, viewingAngle, displaySurfacePosition){
 	var icosahedron = [];
 var t = (1 +  Math.sqrt(5))/2;
 
@@ -2120,7 +2139,7 @@ c.fill();
 }
 
 }
-function arrow(vectorPosition, vector, axisOfEnd, endLength, endAngle){
+function arrow(vectorPosition, vector, axisOfEnd, endLength, endAngle,viewingPosition, viewingAngle, displaySurfacePosition){
 c.beginPath();
 c.moveTo(Sizing * perspective(vectorPosition, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(vectorPosition, viewingPosition, viewingAngle, displaySurfacePosition).y);
 c.lineTo(Sizing * perspective(add(vectorPosition, vector), viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(add(vectorPosition, vector), viewingPosition, viewingAngle, displaySurfacePosition).y);
@@ -3199,9 +3218,73 @@ i++;}
 
 }
 
+
+
+var button1Clicked = false;
+var button2Clicked = false;
+
+	window.myButton1 = function(){
+button1Clicked = true;
+//zoomValue = zoomValue *=1.1;//8/ 1.1;//;////2;
+
+}
+
+	window.myButton2 = function(){
+button2Clicked = true;
+//zoomValue = zoomValue /=1.1//1;////*//1.1;//* 1.1;
+}
+
+	window.stopmyButton1 = function(){
+button1Clicked = false;
+//zoomValue = zoomValue *=1.1;//8/ 1.1;//;////2;
+
+}
+
+	window.stopmyButton2 = function(){
+button2Clicked = false;
+//zoomValue = zoomValue /=1.1//1;////*//1.1;//* 1.1;
+}
 // Drawing
 function draw() {
+shiftright =-(4.2/2.5)*boxScaled;//0;// -(4.2/2.5)*boxScaled;//-(4.2/2.5)*boxScaled+1*(boxScale/10-boxScaled);;//boxScale/2 -(5+4.2/2.5)*boxScaled;//-boxScale/10 * 4.2/2.5;//boxScale -(10+4.2/2.5)*boxScaled;//-4.2/2.5 * boxScale/10;
+shiftup = 8/2.5 * boxScaled;//0;//s//8/2.5 * boxScaled;//8/2.5 * boxScaled+4*(boxScale/10-boxScaled);//6/2.5*boxScaled;//8/2.5*boxScaled;//boxScale/2 -(5-8/2.5)*boxScaled;///-boxScale/10* 8/2.5;//boxScale -(10+8/2.5)*boxScaled ;//8/2.5 * boxScale/10;//boxScaled;
+var kC = {x: -5e-1*boxScale, y:1e-1*boxScale, z:5e-1*boxScale}; 
+viewingPosition = {x: kC.x + shiftright, y:kC.y + shiftup, z:kC.z};
+//viewingAngle = {x:Pi/180 *  - 5, y:Pi/180 *  - 30, z:0};
 
+//var angling = 
+viewingAngle = {x:Pi/180 *  - 5, y:Pi/180 *  - 30, z:0};
+var cosines = {x:Math.cos(viewingAngle.x),y:Math.cos(viewingAngle.y),z:Math.cos(viewingAngle.z)};
+var sines = {x:Math.sin(viewingAngle.x),y:Math.sin(viewingAngle.y),z:Math.sin(viewingAngle.z)};
+var fO = scale(kC,-1);
+var endTransformZ = 30e-1 * boxScale * zoomValue;
+/*var transform = {x:0, y:0, z:0};
+transform.x = cosines.y * (sines.z * fO.y + cosines.z * fO.x) - sines.y * fO.z;
+transform.y = sines.y * (cosines.y *fO.z + sines.y * (sines.z * fO.y + cosines.z *fO.x)) + cosines.x * (cosines.z * fO.y-sines.z*fO.x);
+transform.z = cosines.x * (cosines.y * fO.z + sines.y * (sines.z * fO.y + cosines.z*fO.x)) - sines.x * (cosines.z * fO.y- sines.z* fO.x);
+*/
+var originOnScreen = perspective({x:0, y:0, z:0}, viewingPosition, viewingAngle, {x:0, y:0, z:1});
+
+
+//var endTransformX = -canvas.width / (2* Sizing) + endTransformZ * transform.x / transform.z;
+//var endTransformY = -canvas.height / (2* Sizing) + endTransformZ * transform.y / transform.z
+var endTransformX = -canvas.width / (2* Sizing) + endTransformZ * originOnScreen.x;
+var endTransformY = -canvas.height / (2* Sizing) + endTransformZ * originOnScreen.y;
+
+//var transformed = {x:, y:, z:};
+//var directionality = {x:Math.sin(viewingAngle.y) * Math.cos(viewingAngle.x), y:-Math.sin(viewingAngle.x), z:Math.cos(viewingAngle.y) * Math.cos(viewingAngle.x)};
+//var distanceFrom = 30e-1 *boxScale;
+//displaySurfacePosition = {x: (-viewingPosition.x + (5e-1*boxScale + shiftright)) * zoomValue + viewingPosition.x, y:(-viewingPosition.y +  (-20e-1*boxScale + shiftup)) * zoomValue + viewingPosition.y, z:(-viewingPosition.z+(30e-1*boxScale)) * zoomValue + viewingPosition.z};
+//displaySurfacePosition = {x:viewingPosition.x + (directionality.x*distanceFrom*zoomValue) +shiftright, y:viewingPosition.y + (directionality.y*distanceFrom*zoomValue) +shiftup, z:viewingPosition.z + (directionality.z*distanceFrom*zoomValue)};
+//displaySurfacePosition = {x: (-viewingPosition.x + (5e-1*boxScale)) * zoomValue + viewingPosition.x+shiftright, y:(-viewingPosition.y +  (-20e-1*boxScale)) * zoomValue + viewingPosition.y+shiftup, z:(-viewingPosition.z+(30e-1*boxScale)) * zoomValue + viewingPosition.z};
+//displaySurfacePosition = {x:0,y:0, z:30e-1 * zoomValue * boxScale};
+displaySurfacePosition = {x:endTransformX,y:endTransformY, z:endTransformZ};
+
+//displaySurfacePosition = add(displaySurfacePosition,directionality);
+//box = {width:1e-1*boxScale, height:1e-1*boxScale, depth:1e-1*boxScale}
+box.width = 1e-1*boxScale;
+box.height = 1e-1*boxScale;
+box.depth = 1e-1*boxScale;
 
 //.*
 /*
@@ -3258,7 +3341,7 @@ c.fillStyle = `rgb(
 		${255})`
 
     
-arrow({x:0, y:0, z:0}, {x:lengthOfAxisX, y:0, z:0}, {x:0, y:0, z:1}, 0*lengthOfAxisX/20,arrowAngle);
+arrow({x:0, y:0, z:0}, {x:lengthOfAxisX, y:0, z:0}, {x:0, y:0, z:1}, 0*lengthOfAxisX/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 c.strokeStyle = `rgb(
 		${0}, 
 		${255}, 
@@ -3280,7 +3363,7 @@ c.fillStyle = `rgb(
 		${255})`
 
 
-arrow({x:0, y:0, z:0}, {x:0, y:lengthOfAxisY, z:0}, {x:1, y:0, z:0}, 0*lengthOfAxisX/20,arrowAngle);
+arrow({x:0, y:0, z:0}, {x:0, y:lengthOfAxisY, z:0}, {x:1, y:0, z:0}, 0*lengthOfAxisX/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 c.strokeStyle = `rgb(
 		${0}, 
 		${0}, 
@@ -3300,27 +3383,27 @@ c.fillStyle = `rgb(
 		${0}, 
 		${255})`
 
-arrow({x:0, y:0, z:0}, {x:0, y:0, z:lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisX/20,arrowAngle);
+arrow({x:0, y:0, z:0}, {x:0, y:0, z:lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisX/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 
 
 
-arrow({x:lengthOfAxisX, y:lengthOfAxisY, z:lengthOfAxisZ}, {x:0, y:0, z:-lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle);
+arrow({x:lengthOfAxisX, y:lengthOfAxisY, z:lengthOfAxisZ}, {x:0, y:0, z:-lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 
-arrow({x:lengthOfAxisX, y:lengthOfAxisY, z:lengthOfAxisZ}, {x:0, y:-lengthOfAxisY, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle);
+arrow({x:lengthOfAxisX, y:lengthOfAxisY, z:lengthOfAxisZ}, {x:0, y:-lengthOfAxisY, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 
-arrow({x:lengthOfAxisX, y:lengthOfAxisY, z:lengthOfAxisZ}, {x:-lengthOfAxisX, y:0, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisX/20,arrowAngle);
+arrow({x:lengthOfAxisX, y:lengthOfAxisY, z:lengthOfAxisZ}, {x:-lengthOfAxisX, y:0, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisX/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 
-arrow({x:lengthOfAxisX, y:0, z:0}, {x:0, y:lengthOfAxisY, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle);
+arrow({x:lengthOfAxisX, y:0, z:0}, {x:0, y:lengthOfAxisY, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 
-arrow({x:lengthOfAxisX, y:0, z:0}, {x:0, y:0, z:lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle);
+arrow({x:lengthOfAxisX, y:0, z:0}, {x:0, y:0, z:lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 
-arrow({x:0, y:lengthOfAxisY, z:0}, {x:lengthOfAxisX, y:0, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle);
+arrow({x:0, y:lengthOfAxisY, z:0}, {x:lengthOfAxisX, y:0, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 
-arrow({x:0, y:lengthOfAxisY, z:0}, {x:0, y:0, z:lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle);
+arrow({x:0, y:lengthOfAxisY, z:0}, {x:0, y:0, z:lengthOfAxisZ}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 
-arrow({x:0, y:0, z:lengthOfAxisZ}, {x:lengthOfAxisX, y:0, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle);
+arrow({x:0, y:0, z:lengthOfAxisZ}, {x:lengthOfAxisX, y:0, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisZ/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 
-arrow({x:0, y:0, z:lengthOfAxisZ}, {x:0, y:lengthOfAxisY, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle);
+arrow({x:0, y:0, z:lengthOfAxisZ}, {x:0, y:lengthOfAxisY, z:0}, {x:0, y:1, z:0}, 0*lengthOfAxisY/20,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 */
 //Drawing the trail
 if(showPath == true){
@@ -3329,7 +3412,7 @@ while(trailNumber < numberOfElements){
 //Draw Path
 if(all_shown == true || paths_shown.includes(trailNumber) == true){
 
-		trail(trailNumber, trail_thickness, trailColor[trailNumber].R, trailColor[trailNumber].G, trailColor[trailNumber].B);
+		trail(trailNumber, trail_thickness, trailColor[trailNumber].R, trailColor[trailNumber].G, trailColor[trailNumber].B,viewingPosition, viewingAngle, displaySurfacePosition);
 }
 
 trailNumber++;	
@@ -3359,12 +3442,12 @@ c.strokeStyle = `rgb(
 		${0})`
 		c.lineWidth = 1;
 
-//icosphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), icosphereRecursion);
-//PatternedIcosphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), icosphereRecursion, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
-//UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks);
-//Patterned_UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
-Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions);
-//Patterned_Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
+//icosphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), icosphereRecursion,viewingPosition, viewingAngle, displaySurfacePosition);
+//PatternedIcosphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), icosphereRecursion, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2,viewingPosition, viewingAngle, displaySurfacePosition);
+//UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks,viewingPosition, viewingAngle, displaySurfacePosition);
+//Patterned_UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2,viewingPosition, viewingAngle, displaySurfacePosition);
+Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions,viewingPosition, viewingAngle, displaySurfacePosition);
+//Patterned_Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2,viewingPosition, viewingAngle, displaySurfacePosition);
 
 ballNumber++;
 }
@@ -3387,7 +3470,7 @@ c.strokeStyle = `rgb(
 		${0}, 
 		${0}, 
 		${0})`
-arrow(vectorPosition[v], scale(normalize(vectorField[v]),0.005), normalize(cross(vectorField[v], {x:1, y:1, z:1})), magnitude(scale(normalize(vectorField[v]),0.005))/10,arrowAngle)
+arrow(vectorPosition[v], scale(normalize(vectorField[v]),0.005), normalize(cross(vectorField[v], {x:1, y:1, z:1})), magnitude(scale(normalize(vectorField[v]),0.005))/10,arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 }
 else{
 c.fillStyle = `rgb(
@@ -3398,7 +3481,7 @@ c.strokeStyle = `rgb(
 		${0}, 
 		${0}, 
 		${0})`    
-arrow(vectorPosition[v], scale(vectorField[v],0.003), normalize(cross(vectorField[v], {x:1, y:1, z:1})), magnitude(scale(vectorField[v],0.001))/10, arrowAngle)
+arrow(vectorPosition[v], scale(vectorField[v],0.003), normalize(cross(vectorField[v], {x:1, y:1, z:1})), magnitude(scale(vectorField[v],0.001))/10, arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition)
 }
 v++;
 }}
@@ -3724,7 +3807,7 @@ c.fillStyle = `rgb(
 		${255})` 
 
         c.lineWidth = 10;
-        arrow(position[0], perihelion_of_mercury_list[perihelion_of_mercury_list.length - 1][0], normalize(cross(perihelion_of_mercury_list[perihelion_of_mercury_list.length - 1][0], {x:0, y:1, z:0})), magnitude(perihelion_of_mercury_list[perihelion_of_mercury_list.length - 1][0])/10, arrowAngle);
+        arrow(position[0], perihelion_of_mercury_list[perihelion_of_mercury_list.length - 1][0], normalize(cross(perihelion_of_mercury_list[perihelion_of_mercury_list.length - 1][0], {x:0, y:1, z:0})), magnitude(perihelion_of_mercury_list[perihelion_of_mercury_list.length - 1][0])/10, arrowAngle,viewingPosition, viewingAngle, displaySurfacePosition);
 
 c.fillText(number_of_perihelions, 3000,  starting_text_y - 4 * text_spacing);
 
@@ -3873,7 +3956,16 @@ c.fillStyle = `rgb(
 element = elements[button1%(elements.length)];
 
 
-c.fillText(element, 1000, 1000);
+//c.fillText(element, 1000, 1000);
+
+
+
+if(button1Clicked == true){
+zoomValue = zoomValue * 1.03;
+}
+if(button2Clicked == true){
+zoomValue = zoomValue / 1.03;
+}
 
 
 }
