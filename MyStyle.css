@@ -19,6 +19,19 @@ border-spacing:10px;/*10;*/
     
     }
 
+.a2{
+     /*font-size:40px;  */
+    font-size:clamp(calc(2.8rem*1), calc(4.6vw*1),calc(7rem*1));/*4.5rem;*/
+     text-align:center;
+     /*font-style:italic;*/
+        font-style:normal;
+     color:black; 
+    /*padding:0rem clamp(2rem, 8vw, 7.5rem);*/
+    padding-left:clamp(2rem, 8vw, 7.5rem);
+        padding-right:clamp(2rem, 8vw, 7.5rem);
+    font-family:georgia;
+
+}
     td{
     /*align:center;*/
          text-align:center;
