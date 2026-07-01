@@ -22,7 +22,8 @@ border-spacing:10px;/*10;*/
 .a2{
      /*font-size:40px;  */
     font-size:clamp(calc(2.8rem*1), calc(4.6vw*1),calc(7rem*1));/*4.5rem;*/
-     text-align:center;
+     /*text-align:center;*/
+    text-align:left;
      /*font-style:italic;*/
         font-style:normal;
      color:black; 
