@@ -36,6 +36,8 @@
 <!--<p style = "font-size : 60px;" > </p> -->
 <!--<h1 style = "text-align: left;">2025-2026</h1>-->
 <!--<h2 style = "text-align: left;">Improved Models For Orbital Trajectory Generation</h2>-->
+
+
 <a href = "2025.html" class = "a2">Improved Models For Orbital Trajectory Generation</a>
 <h3 style = "text-align: left;">2025</h3>
 
@@ -115,6 +117,16 @@ velocity vector of the asteroid causes a negligible change in the distance. Thes
     <!--<p style = "font-size : 30px;">My main work in this year covered</p>-->
 <p>My main work in this year covered</p>
 
-    <!-- !-->
+<!-- !-->
+
+   <div id="link_bar"></div>
+    <script>
+        fetch("link_bar.html")
+            .then(response => response.text())
+            .then(data => {
+        document.body.insertAdjacentHTML("afterbegin", data);
+            });
+    </script>
+
 </body>    
 </html>
