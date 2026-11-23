@@ -114,6 +114,7 @@ font-size:10px;
 
     }
 
-nav {display: flex;   justify-content: space-evenly; gap: 30px; padding: 15px; background-color: green;}
+nav {display: flex;   justify-content: space-around; gap: 30px; padding: 15px; background-color: green;}
 
-nav a {text-decoration: none; color: black;}
+nav a {text-decoration: none; color: black;     text-align: center; flex:1;
+}
