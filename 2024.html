@@ -59,5 +59,16 @@
     <!-- #<img src = "20251.png" style = "width:36%; height:auto;"> -->
 <img src = "20241.png" style = "width:36%; height:auto;">
     <!-- !-->
+
+    
+   <div id="link_bar"></div>
+    <script>
+        fetch("link_bar.html")
+            .then(response => response.text())
+            .then(data => {
+        document.body.insertAdjacentHTML("afterbegin", data);
+            });
+    </script>
+
 </body>    
 </html>
