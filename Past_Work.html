@@ -41,7 +41,7 @@
 
 <!--<p style = "font-size : 30px;">My main work in this year covered improving the original solutions to Lambert's problem, by taking the effects of other planets into consideration. Lambert's problem is defined as the issue of how to transfer between two points in space wihtin a gravitational field, in a given time. The standard solution is based on analyzing the orbits as two body gravity. However, when I was testing the solutions that were created by the normal methods for the problem, I noticed that they were not very accurate, missing by up 100,000 to 1,000,000 km. After testing the same thing, after removing the gravitaionl influence of other planets, I noticed that the algorithm wworked far better, missing by only around 10 km. This caused me to seek a way to improve the method for the model under conditions of realistic gravity. Since the problem was quite vast, I first consrained the launch and landing time and location to a realistic range. Based on recent interest in such missions, I selected transfers from the Lagrange point L1 and Mars. </p>-->
 <!--<p >My main work in this year covered improving the original solutions to Lambert's problem, by taking the effects of other planets into consideration. Lambert's problem is defined as the issue of how to transfer between two points in space wihtin a gravitational field, in a given time. The standard solution is based on analyzing the orbits as two body gravity. However, when I was testing the solutions that were created by the normal methods for the problem, I noticed that they were not very accurate, missing by up 100,000 to 1,000,000 km. After testing the same thing, after removing the gravitaionl influence of other planets, I noticed that the algorithm wworked far better, missing by only around 10 km. This caused me to seek a way to improve the method for the model under conditions of realistic gravity. Since the problem was quite vast, I first consrained the launch and landing time and location to a realistic range. Based on recent interest in such missions, I selected transfers from the Lagrange point L1 and Mars. </p>-->
-<p >My main work during this year covered improving the original solutions to Lambert's problem, by taking the effects of other
+<!--<p >My main work during this year covered improving the original solutions to Lambert's problem, by taking the effects of other
    planets into consideration. 
   Lambert's problem is defined as the issue of how to transfer between two
    points in space within a gravitational field, in a given time. The standard solution is based on analyzing the orbits as two body 
@@ -55,13 +55,23 @@
     initial guess, I used an iterative shooting method to calculate the actual velocity needed to make the transfer between the points within the time.
   After collecting these velocities as data points, I used an ML model to find an expression for this residual based on gravitational and mission conditions.
 Ultimately, with a model trained on 600,000 data points, the model was successful, reducing the miss distance by 2 to 3 orders of magnitude.</p>
+!-->
+
+<p > Developed a machine-learning (ML) approach to improve launch-velocity
+predictions for satellite trajectories under the influence of N-body perturbations,
+providing a rapid and accurate approach for estimating launch velocities required
+for interplanetary trajectories. Demonstrated ML model’s ability to reduce miss distance by a factor of 220 in
+comparison to Gooding-Lambert, while only taking approximately 52 μs to run,
+which is around 4000x faster than the iterative shooting method. </p>
+
+    
 <!--<h2 style = "text-align: left;">Creating an astrodynamical framework and modelling near-earth objects (NEOs)</h2>-->
 <a href = "2024.html" class = "a2">Creating an astrodynamical framework and modelling near-earth objects (NEOs)</a>
 
 <h3 style = "text-align: left;">2024</h3>
 
 <!--<p style = "font-size : 30px;">My main work in this year covered</p>-->
-<p>My main work in this year covered analyzing and investigating asteroids using computational N-body simulations using various frameworks, and analyzing the effect of kinetic impacts on the bodies.
+<!--<p>My main work in this year covered analyzing and investigating asteroids using computational N-body simulations using various frameworks, and analyzing the effect of kinetic impacts on the bodies.
  Beginning this work, I began by creating the N-body framework (which is a code that is used for simulations in the project section, made over a few years). 
  In the tests for this project, I wanted to see how different effects play into the model. One effect that intrigued me was general relativity, because it is the true means by which 
  gravitation arises. While I had already implemented Newtonian gravity as part of my earlier simulations, I wanted to understand the impact of general relativity on the problem. 
@@ -76,6 +86,20 @@ Ultimately, with a model trained on 600,000 data points, the model was successfu
  I found that kinetic impacts far from the location of impact were the most effective, and that earlier impacts were also more successful. I also found that impacts parallel to the direction of motion, at high speeds, were the most effective at 
  deflection.</p>
 <!--<h2 style = "text-align: left;">Developing and testing adaptive wing designs</h2>-->
+
+<p> 
+Developed an accurate astrodynamic model to simulate kinetic impact and estimate
+the sensitivity of collision parameters on the close approach distance of an asteroid
+and applied the model to investigate the kinetic impact of the asteroid YR4. It is shown that the maximum deviation from the asteroid orbit occurs when the
+impact happens when the asteroid is closest to the Sun, and when the impact
+happens earlier. It is shown that there is a linear relationship between the closest
+approach distance and the momentum enhancement factor (beta). For the simulated
+case with YR4, the distance increases by about 1.89 Earth radii with an increase of 1
+unit of beta. It is also found that the maximum change in distance occurs when the
+asteroid is impacted “head-on”. Hitting the asteroid in a direction orthogonal to the
+velocity vector of the asteroid causes a negligible change in the distance. These results could help in finding the optimal solution for deflecting asteroids.
+
+</p>    
 <a href = "2023.html" class = "a2">Developing and testing adaptive wing designs</a>
 
     
