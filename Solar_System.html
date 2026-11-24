@@ -874,7 +874,7 @@ var angular_velocity = [];
 var torque = [];
 var moment_of_Inertia = [];
 var timeStep = 2000//1000;//100;//0.5e-15;
-var numSteps = 5000//10000;//1000;//10000;//100; 
+var numSteps = 5000//1000//2500//400//5000//10000;//1000;//10000;//100; 
 var numberOfElements = 10;//200;
 var Gravitational_Force = [];
 var Coulomb_Force = [];
@@ -967,7 +967,7 @@ var half2 = [];
 var icosphereRecursion = 4;
 var number_of_slices = 20;
 var number_of_stacks = 20;
-var number_of_subdivisions  = 3;//1;
+var number_of_subdivisions  = 5;//4;//3;//1;
 var pvelocity = [];
 var calculate_energy = false;
 //Orbital periods
@@ -1032,8 +1032,10 @@ var trailColor = [];
 var trail_thickness = 3;//4;
 var showPath = true;//false;
 var path = [];
-var trail_rate = 20;
-var path_length = 15000;//300000;//30000;
+var trail_rate = 40//10//40;//20;//;20;
+var path_length = [];//15000;//300000;//30000;
+//var path_length = [];//15000;//300000;//30000;
+
 var distance_with_time_table = [];
 var all_shown = true;
 var paths_shown = [];
@@ -1220,6 +1222,19 @@ var velocity_satelite = velocity[3];
 var closest_bennu = {distance:magnitude(subtract(position[10], position[3])), time:0};
 //var closest_satelite = {distance:magnitude(subtract(position[11], position[10])), time:0};
 */
+
+
+
+
+var nep_length = 160000*1000/numSteps;//150000//100000//45000//5000//15000;
+var plx = 0;
+while(plx < 10){
+
+path_length[plx] = Math.floor(Math.sqrt( nep_length * nep_length * Math.pow(magnitude(position[plx])/magnitude(position[9]), 3) ));
+
+plx++;
+}
+path_length[0] = 15000;
 var a = 0;
 while(a < numberOfElements){
 density[a] = 2600;
@@ -3004,7 +3019,7 @@ path[pathNumber].x.push(position[pathNumber].x - center.x);
 path[pathNumber].y.push(position[pathNumber].y - center.y);
 path[pathNumber].z.push(position[pathNumber].z - center.z); 
 
-if(path[pathNumber].x.length > path_length){
+if(path[pathNumber].x.length > path_length[pathNumber]){
 path[pathNumber].x.shift()
 path[pathNumber].y.shift()
 path[pathNumber].z.shift()
