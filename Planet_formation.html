@@ -873,7 +873,7 @@ var angular_velocity = [];
 var torque = [];
 var moment_of_Inertia = [];
 var timeStep = 20//15//10//100//#2000//1000;//100;//0.5e-15;
-var numSteps = 3//5//20//5000//10000;//1000;//10000;//100; 
+var numSteps = 6;///6;/10//3//5//20//5000//10000;//1000;//10000;//100; 
 var numberOfElements = 100;//80;//0//#311//0;//200;
 var Gravitational_Force = [];
 var Coulomb_Force = [];
@@ -919,7 +919,7 @@ var use_moving_object = false;//true;//f/alse;
 var center_number = 3;//5;
 //Integration methods
 //"Euler, Runge-Kutta, Semi-implicit Euler, Verlet, Leapfrog"
-var integration = "Runge-Kutta";//"Semi-implicit Euler";
+var integration = "Verlet";//://"Semi-implicit Euler";//"Runge-Kutta";//"Semi-implicit Euler";
 
 //Consider each force
 var consider__newtonian_gravity = true;//false;// was not used before 12:01 PM - 12:02 PM February 20 2025 changed on July 27 11:39 PM
@@ -933,7 +933,7 @@ var consider_intermolecular = false;//true;
 var consider_general_relativity = false;
 if(consider_general_relativity == true){consider__newtonian_gravity = false;}
 //Numbers in use
-var elasticity = 0.97//#0.95////0.8;//;1;
+var elasticity = 0.99;//0.97//#0.95////0.8;//;1;
 var wallElasticity = 1;
 var µ_s = 0;
 var µ_k = 0;
@@ -1256,7 +1256,8 @@ radius[a] = Math.cbrt(3/4/Pi*(mass[a]/density));
 //force[a] = {x:0,y:0,z:0};
 position[a] = {x:Random(-3e6,3e6),y:Random(-3e6,3e6),z:Random(-3e6,3e6)};
 color[a] = {R:Random(190,245),G:Random(140,185),B:Random(50,170)};
-velocity[a] = {x:0,y:0,z:0};//scale({x:vTot * RandomSign(), y:vTot * RandomSign(), z:vTot * RandomSign()}, 1/Math.sqrt(3));
+var vel = 500;//200;//50;//100;
+velocity[a] = {x:Random(-vel, vel), y:Random(-vel, vel), z:Random(-vel, vel)}; //{x:0,y:0,z:0};//scale({x:vTot * RandomSign(), y:vTot * RandomSign(), z:vTot * RandomSign()}, 1/Math.sqrt(3));
 
 
 angular_position[a] = {x:0, y:0, z:0};
@@ -1280,6 +1281,34 @@ distance_multiple[a] = [];
 sorted_distance_multiple[a] = [];
 a++;    
 }
+
+
+// var velDev = {x:0, y:0, z:0};
+// var devVelI = 0;
+// while(devVelI < numberOfElements){
+// velDev = add(velDev,velocity[devVelI]);
+// devVelI++;
+// }
+// var cVelR = 0;
+// while(cVelR < numberOfElements){
+// velocity[cVelR] = add(velocity[cVelR], scale(velDev, -1/numberOfElements));
+//   cVelR++;
+// }
+var pDev = {x:0, y:0, z:0};
+var massTot = 0;
+var devPI = 0;
+while(devPI < numberOfElements){
+pDev = add(pDev,scale(velocity[devPI], mass[devPI]));
+massTot+=mass[devPI];
+devPI++;
+}
+
+var cPR = 0;
+while(cPR < numberOfElements){
+velocity[cPR] = add(velocity[cPR], scale(pDev, -1/massTot));
+  cPR++;
+}
+
 
 //Viewing
 function perspective(A, C, Angle, E){
@@ -2617,7 +2646,7 @@ position[loop_through].y = earlier_position[loop_through].y + earlier_velocity[l
 
 position[loop_through].z = earlier_position[loop_through].z + earlier_velocity[loop_through].z * timeStep + 1/2 * force[loop_through].z/mass[loop_through] * Math.pow(timeStep, 2);
 
-velocity_for_new_position[loop_through] = scale(force[loop_through], 1/2 * 1/mass[loop_through] * timeStep);
+velocity_for_new_position[loop_through] = add(earlier_velocity[loop_through], scale(force[loop_through], 1/2 * 1/mass[loop_through] * timeStep));
 
 loop_through++;
 }
