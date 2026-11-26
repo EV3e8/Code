@@ -790,7 +790,8 @@ var elements = ["helium","neon","argon","krypton","xenon"];
 var element = elements[0];
 var radii = [31e-12,38e-12,71e-12,87e-12,115e-12];
 var masses = [6.6465e-27, 3.35e-26, 6.63e-26, 1.39e-25, 2.18e-25];
-var colors = [{R:10, G:100, B:80},{R:200, G:80, B:100},{R:10, G:100, B:180},{R:100, G:200, B:220},{R:100, G:100, B:220}];
+//var colors = [{R:10, G:100, B:80},{R:200, G:80, B:100},{R:10, G:100, B:180},{R:100, G:200, B:220},{R:100, G:100, B:220}];
+var colors = [{R:20, G:200, B:160},{R:200, G:80, B:100},{R:10, G:100, B:180},{R:100, G:200, B:220},{R:100, G:100, B:220}];
 
 
 var temperature_original = 298.15;
@@ -821,7 +822,7 @@ var torque = [];
 var moment_of_Inertia = [];
 var timeStep = 1e-13;
 var numSteps = 1; 
-var numberOfElements = 300;
+var numberOfElements = 400//p//500;//1000;//--//2000;//10000;//400;//300;
 var Gravitational_Force = [];
 var Coulomb_Force = [];
 var van_der_Waals = [];
@@ -910,9 +911,9 @@ var deformation = 0.01;
 var half1 = [];
 var half2 = [];
 var icosphereRecursion = 4;
-var number_of_slices = 20;
-var number_of_stacks = 20;
-var number_of_subdivisions  = 1;
+var number_of_slices =6//5//4//4//4//5//3 //2//1//20;
+var number_of_stacks = 6//5//4//5//3//2//1//20;
+var number_of_subdivisions  = 2;//1;//2;//1;
 var pvelocity = [];
 var calculate_energy = false;
 //Orbital periods
@@ -1172,7 +1173,7 @@ mass[a] = 6.6465e-27;
 charge[a] =  0;
 force[a] = {x:0, y:0, z:0};
 position[a] = {x:Random(box.width/4 + radius[a], box.width * 3/4 - radius[a]), y:Random(box.width/4 + radius[a], box.width * 3/4 - radius[a]), z:Random(box.width/4 + radius[a], box.width * 3/4 - radius[a])};
-color[a] = {R:10, G:100,B:80};
+color[a] = colors[0]//{R:colors[0], G:2*100,B:2*80}//colors[0],//{R:2*10, G:2*100,B:2*80};//{R:10, G:100,B:80};
 
 separation = 0;
 
@@ -1210,6 +1211,12 @@ perihelions[a] = [];
 distance_multiple[a] = [];
 sorted_distance_multiple[a] = [];
 a++;    
+}
+
+
+function Round(number, decimal_places){
+var rounded_value = Math.round(number * Math.pow(10, decimal_places))/Math.round(Math.pow(10, decimal_places));
+return rounded_value;
 }
 
 //Viewing
@@ -1908,6 +1915,628 @@ c.fill();
 }
 
 }
+
+function Unit_Geodesic_Sphere(number_of_subdivisions){
+var radius = 1;//{x:1};
+var position = {x:0, y:0, z:0}
+//var icosahedron
+var icosahedron = [];
+var t = (1 +  Math.sqrt(5))/2;
+
+icosahedron.push({x: - 1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x: - 1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+
+var original_faces = [];
+var faces = [];
+function icosahedronTriangles(a, b, c){
+original_faces.push({A:icosahedron[a], B:icosahedron[b], C:icosahedron[c]});
+}
+
+icosahedronTriangles(0, 11, 5);
+icosahedronTriangles(0, 5, 1);
+icosahedronTriangles(0, 1, 7);
+icosahedronTriangles(0, 7, 10);
+icosahedronTriangles(0, 10, 11);
+
+icosahedronTriangles(1, 5, 9);
+icosahedronTriangles(5, 11, 4);
+icosahedronTriangles(11, 10, 2);
+icosahedronTriangles(10, 7, 6);
+icosahedronTriangles(7, 1, 8);
+
+icosahedronTriangles(3, 9, 4);
+icosahedronTriangles(3, 4, 2);
+icosahedronTriangles(3, 2, 6);
+icosahedronTriangles(3, 6, 8);
+icosahedronTriangles(3, 8, 9);
+
+icosahedronTriangles(4, 9, 5);
+icosahedronTriangles(2, 4, 11);
+icosahedronTriangles(6, 2, 10);
+icosahedronTriangles(8, 6, 7);
+icosahedronTriangles(9, 8, 1);
+
+function move_to_sphere(a){
+return add(scale(normalize(subtract(a, position)), radius), position);
+}
+
+function subdivide_triangle(triangle, number_of_subdivisions){
+var A = triangle.A;
+var B = triangle.B;
+var C = triangle.C;
+
+var points = [];
+var triangles = [];
+var i = 0;
+while(i <= number_of_subdivisions){
+var j = 0;
+while(j <= i){
+var new_point;
+if(i == 0){
+new_point = A;	
+}	
+else{
+new_point = add(add(A, scale(subtract(B, A), i/number_of_subdivisions)), scale(subtract(C, B), j/number_of_subdivisions));
+}
+points.push({point:new_point, i:i, j:j});
+j++;	
+}
+i++;	
+}
+
+function find_n(i, j){
+    if(i == 0){return 0;}
+else{
+return i * (i + 1)/2 + j;    
+}
+}
+
+// var p = 0;
+// while(p < points.length){
+// var I = points[p].i;
+// var J = points[p].j;
+
+// function possible_triangles(I1, J1, I2, J2){
+// if(I1 >= 0 && J1 >= 0 && I1 <= number_of_subdivisions && J1 <= I1 && I2 >= 0 && J2 >= 0 && I2 <= number_of_subdivisions && J2 <= I2){	
+// triangles.push({A:points[p].point, B:points[find_n(I1, J1)].point, C:points[find_n(I2, J2)].point});
+// }
+// }
+
+// possible_triangles(I - 1, J, I - 1, J - 1)
+// possible_triangles(I - 1, J - 1, I, J - 1)
+// possible_triangles(I, J - 1, I + 1, J)
+// possible_triangles(I + 1, J, J, I + 1, J + 1)
+// possible_triangles(I + 1, J + 1, I, J + 1)
+// possible_triangles(I, J + 1, I - 1, J)
+
+// p++;
+// }
+
+// function removeDuplicates(arr) {
+//     return arr.filter((value,
+//         index) => arr.indexOf(value) === index);
+// }
+
+// triangles = removeDuplicates(triangles);
+var i = 0;
+while(i < number_of_subdivisions){
+var j = 0;
+while(j <= i)
+{
+triangles.push({A: points[find_n(i, j)].point, B: points[find_n(i + 1, j)].point, C: points[find_n(i + 1, j + 1)].point});
+
+if(j < i){
+triangles.push({ A: points[find_n(i, j)].point, B: points[find_n(i + 1, j + 1)].point,C: points[find_n(i, j + 1)].point});
+}
+
+j++; 
+}
+i++;
+}
+
+return triangles;
+
+}
+
+
+
+
+var subdivided_original_face = [];
+
+var f = 0;
+while(f < original_faces.length){
+	subdivided_original_face[f] = [];
+	subdivided_original_face[f] = subdivide_triangle(original_faces[f], number_of_subdivisions);
+
+
+var a = 0;
+while(a < subdivided_original_face[f].length){
+
+var pushed_to_sphere = {A:move_to_sphere(subdivided_original_face[f][a].A), B:move_to_sphere(subdivided_original_face[f][a].B), C:move_to_sphere(subdivided_original_face[f][a].C)};
+faces.push(pushed_to_sphere);
+a++;	
+}
+f++;
+}
+
+
+return faces;
+}
+var saved_sphere = [];
+saved_sphere[0] =  Unit_Geodesic_Sphere(0)
+saved_sphere[1] =  Unit_Geodesic_Sphere(1)
+saved_sphere[2] =  Unit_Geodesic_Sphere(2)
+saved_sphere[3] =  Unit_Geodesic_Sphere(3)
+saved_sphere[4] =  Unit_Geodesic_Sphere(4)
+saved_sphere[5] =  Unit_Geodesic_Sphere(5)
+saved_sphere[6] =  Unit_Geodesic_Sphere(6)
+saved_sphere[7] =  Unit_Geodesic_Sphere(7)
+saved_sphere[8] =  Unit_Geodesic_Sphere(8)
+saved_sphere[9] =  Unit_Geodesic_Sphere(9)
+saved_sphere[10] =  Unit_Geodesic_Sphere(10)
+saved_sphere[11] =  Unit_Geodesic_Sphere(11)
+saved_sphere[12] =  Unit_Geodesic_Sphere(12)
+saved_sphere[13] =  Unit_Geodesic_Sphere(13)
+saved_sphere[14] =  Unit_Geodesic_Sphere(14)
+
+
+function New_Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions){
+// 	var icosahedron = [];
+// var t = (1 +  Math.sqrt(5))/2;
+
+// icosahedron.push({x: - 1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+// icosahedron.push({x:1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+// icosahedron.push({x: - 1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+// icosahedron.push({x:1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+
+// icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+// icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+// icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+// icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+
+// icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+// icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+// icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+// icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+
+// var original_faces = [];
+// var faces = [];
+// function icosahedronTriangles(a, b, c){
+// original_faces.push({A:icosahedron[a], B:icosahedron[b], C:icosahedron[c]});
+// }
+
+// icosahedronTriangles(0, 11, 5);
+// icosahedronTriangles(0, 5, 1);
+// icosahedronTriangles(0, 1, 7);
+// icosahedronTriangles(0, 7, 10);
+// icosahedronTriangles(0, 10, 11);
+
+// icosahedronTriangles(1, 5, 9);
+// icosahedronTriangles(5, 11, 4);
+// icosahedronTriangles(11, 10, 2);
+// icosahedronTriangles(10, 7, 6);
+// icosahedronTriangles(7, 1, 8);
+
+// icosahedronTriangles(3, 9, 4);
+// icosahedronTriangles(3, 4, 2);
+// icosahedronTriangles(3, 2, 6);
+// icosahedronTriangles(3, 6, 8);
+// icosahedronTriangles(3, 8, 9);
+
+// icosahedronTriangles(4, 9, 5);
+// icosahedronTriangles(2, 4, 11);
+// icosahedronTriangles(6, 2, 10);
+// icosahedronTriangles(8, 6, 7);
+// icosahedronTriangles(9, 8, 1);
+
+// function move_to_sphere(a){
+// return add(scale(normalize(subtract(a, position)), radius), position);
+// }
+
+// function subdivide_triangle(triangle, number_of_subdivisions){
+// var A = triangle.A;
+// var B = triangle.B;
+// var C = triangle.C;
+
+// var points = [];
+// var triangles = [];
+// var i = 0;
+// while(i <= number_of_subdivisions){
+// var j = 0;
+// while(j <= i){
+// var new_point;
+// if(i == 0){
+// new_point = A;	
+// }	
+// else{
+// new_point = add(add(A, scale(subtract(B, A), i/number_of_subdivisions)), scale(subtract(C, B), j/number_of_subdivisions));
+// }
+// points.push({point:new_point, i:i, j:j});
+// j++;	
+// }
+// i++;	
+// }
+
+// function find_n(i, j){
+//     if(i == 0){return 0;}
+// else{
+// return i * (i + 1)/2 + j;    
+// }
+// }
+
+// // var p = 0;
+// // while(p < points.length){
+// // var I = points[p].i;
+// // var J = points[p].j;
+
+// // function possible_triangles(I1, J1, I2, J2){
+// // if(I1 >= 0 && J1 >= 0 && I1 <= number_of_subdivisions && J1 <= I1 && I2 >= 0 && J2 >= 0 && I2 <= number_of_subdivisions && J2 <= I2){	
+// // triangles.push({A:points[p].point, B:points[find_n(I1, J1)].point, C:points[find_n(I2, J2)].point});
+// // }
+// // }
+
+// // possible_triangles(I - 1, J, I - 1, J - 1)
+// // possible_triangles(I - 1, J - 1, I, J - 1)
+// // possible_triangles(I, J - 1, I + 1, J)
+// // possible_triangles(I + 1, J, J, I + 1, J + 1)
+// // possible_triangles(I + 1, J + 1, I, J + 1)
+// // possible_triangles(I, J + 1, I - 1, J)
+
+// // p++;
+// // }
+
+// // function removeDuplicates(arr) {
+// //     return arr.filter((value,
+// //         index) => arr.indexOf(value) === index);
+// // }
+
+// // triangles = removeDuplicates(triangles);
+// var i = 0;
+// while(i < number_of_subdivisions){
+// var j = 0;
+// while(j <= i)
+// {
+// triangles.push({A: points[find_n(i, j)].point, B: points[find_n(i + 1, j)].point, C: points[find_n(i + 1, j + 1)].point});
+
+// if(j < i){
+// triangles.push({ A: points[find_n(i, j)].point, B: points[find_n(i + 1, j + 1)].point,C: points[find_n(i, j + 1)].point});
+// }
+
+// j++; 
+// }
+// i++;
+// }
+
+// return triangles;
+
+// }
+
+
+
+
+// var subdivided_original_face = [];
+
+// var f = 0;
+// while(f < original_faces.length){
+// 	subdivided_original_face[f] = [];
+// 	subdivided_original_face[f] = subdivide_triangle(original_faces[f], number_of_subdivisions);
+
+
+// var a = 0;
+// while(a < subdivided_original_face[f].length){
+
+// var pushed_to_sphere = {A:move_to_sphere(subdivided_original_face[f][a].A), B:move_to_sphere(subdivided_original_face[f][a].B), C:move_to_sphere(subdivided_original_face[f][a].C)};
+// faces.push(pushed_to_sphere);
+// a++;	
+// }
+// f++;
+// }
+var base_faces = saved_sphere[number_of_subdivisions];
+var faces = [];
+var rotateTri = 0;
+while(rotateTri < base_faces.length){
+// faces[rotateTri].A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+// faces[rotateTri].B = add(rotate(subtract(faces[rotateTri].B, position), axis, angle), position);
+// faces[rotateTri].C = add(rotate(subtract(faces[rotateTri].C, position), axis, angle), position);
+//faces[rotateTri] = {A: add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position), B:add(rotate(subtract(faces[rotateTri].B, position), axis, angle), position), C:add(rotate(subtract(faces[rotateTri].C, position), axis, angle), position)}//"Z://.A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+
+faces[rotateTri] = {A: add(scale(rotate(subtract(base_faces[rotateTri].A, {x:0, y:0, z:0}), axis, angle), radius), position), B:add(scale(rotate(subtract(base_faces[rotateTri].B, {x:0, y:0, z:0}), axis, angle), radius), position), C:add(scale(rotate(subtract(base_faces[rotateTri].C, {x:0, y:0, z:0}), axis, angle), radius), position)}//"Z://.A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+
+rotateTri++;
+}
+
+// var sortFaces = [];
+
+// var sortNumber = 0;
+// while(sortNumber < faces.length){
+// sortFaces[sortNumber] = {A:faces[sortNumber].A, B:faces[sortNumber].B, C:faces[sortNumber].C, distance:magnitude(subtract(viewingPosition, scale(add(add(faces[sortNumber].A, faces[sortNumber].B), faces[sortNumber].C), 1/3)))};
+
+// sortNumber++;
+// }
+
+// sortFaces.sort(function(a, b){return b.distance - a.distance;});
+// //c.beginPath();
+
+var drawTri = 0;
+while(drawTri < faces.length){
+// var perspA = perspective(sortFaces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition)
+// var perspB =  perspective(sortFaces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition)
+// var perspC = perspective(sortFaces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition)
+var perspA = perspective(faces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition)
+var perspB =  perspective(faces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition)
+var perspC = perspective(faces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition)
+
+
+   if ((perspB.x-perspA.x) * (perspC.y-perspA.y) - (perspB.y - perspA.y) * (perspC.x-perspA.x) <= 0) {
+        drawTri++;
+        continue;
+    }
+
+//c.beginPath();
+c.beginPath();
+
+c.moveTo(Sizing * perspA.x, canvas.height - Sizing * perspA.y);
+c.lineTo(Sizing * perspB.x, canvas.height - Sizing * perspB.y);
+// c.stroke();
+// c.fill();
+c.lineTo(Sizing * perspC.x, canvas.height - Sizing * perspC.y);
+c.closePath();
+c.fill();
+c.stroke();
+	drawTri++;
+
+}
+// c.fill();
+
+// c.stroke();
+// //c.fill();
+
+}
+
+function Shaded_New_Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions, r, g, b, light_vector){
+// 	var icosahedron = [];
+// var t = (1 +  Math.sqrt(5))/2;
+
+// icosahedron.push({x: - 1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+// icosahedron.push({x:1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+// icosahedron.push({x: - 1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+// icosahedron.push({x:1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+
+// icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+// icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+// icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+// icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+
+// icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+// icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+// icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+// icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+
+// var original_faces = [];
+// var faces = [];
+// function icosahedronTriangles(a, b, c){
+// original_faces.push({A:icosahedron[a], B:icosahedron[b], C:icosahedron[c]});
+// }
+
+// icosahedronTriangles(0, 11, 5);
+// icosahedronTriangles(0, 5, 1);
+// icosahedronTriangles(0, 1, 7);
+// icosahedronTriangles(0, 7, 10);
+// icosahedronTriangles(0, 10, 11);
+
+// icosahedronTriangles(1, 5, 9);
+// icosahedronTriangles(5, 11, 4);
+// icosahedronTriangles(11, 10, 2);
+// icosahedronTriangles(10, 7, 6);
+// icosahedronTriangles(7, 1, 8);
+
+// icosahedronTriangles(3, 9, 4);
+// icosahedronTriangles(3, 4, 2);
+// icosahedronTriangles(3, 2, 6);
+// icosahedronTriangles(3, 6, 8);
+// icosahedronTriangles(3, 8, 9);
+
+// icosahedronTriangles(4, 9, 5);
+// icosahedronTriangles(2, 4, 11);
+// icosahedronTriangles(6, 2, 10);
+// icosahedronTriangles(8, 6, 7);
+// icosahedronTriangles(9, 8, 1);
+
+// function move_to_sphere(a){
+// return add(scale(normalize(subtract(a, position)), radius), position);
+// }
+
+// function subdivide_triangle(triangle, number_of_subdivisions){
+// var A = triangle.A;
+// var B = triangle.B;
+// var C = triangle.C;
+
+// var points = [];
+// var triangles = [];
+// var i = 0;
+// while(i <= number_of_subdivisions){
+// var j = 0;
+// while(j <= i){
+// var new_point;
+// if(i == 0){
+// new_point = A;	
+// }	
+// else{
+// new_point = add(add(A, scale(subtract(B, A), i/number_of_subdivisions)), scale(subtract(C, B), j/number_of_subdivisions));
+// }
+// points.push({point:new_point, i:i, j:j});
+// j++;	
+// }
+// i++;	
+// }
+
+// function find_n(i, j){
+//     if(i == 0){return 0;}
+// else{
+// return i * (i + 1)/2 + j;    
+// }
+// }
+
+// // var p = 0;
+// // while(p < points.length){
+// // var I = points[p].i;
+// // var J = points[p].j;
+
+// // function possible_triangles(I1, J1, I2, J2){
+// // if(I1 >= 0 && J1 >= 0 && I1 <= number_of_subdivisions && J1 <= I1 && I2 >= 0 && J2 >= 0 && I2 <= number_of_subdivisions && J2 <= I2){	
+// // triangles.push({A:points[p].point, B:points[find_n(I1, J1)].point, C:points[find_n(I2, J2)].point});
+// // }
+// // }
+
+// // possible_triangles(I - 1, J, I - 1, J - 1)
+// // possible_triangles(I - 1, J - 1, I, J - 1)
+// // possible_triangles(I, J - 1, I + 1, J)
+// // possible_triangles(I + 1, J, J, I + 1, J + 1)
+// // possible_triangles(I + 1, J + 1, I, J + 1)
+// // possible_triangles(I, J + 1, I - 1, J)
+
+// // p++;
+// // }
+
+// // function removeDuplicates(arr) {
+// //     return arr.filter((value,
+// //         index) => arr.indexOf(value) === index);
+// // }
+
+// // triangles = removeDuplicates(triangles);
+// var i = 0;
+// while(i < number_of_subdivisions){
+// var j = 0;
+// while(j <= i)
+// {
+// triangles.push({A: points[find_n(i, j)].point, B: points[find_n(i + 1, j)].point, C: points[find_n(i + 1, j + 1)].point});
+
+// if(j < i){
+// triangles.push({ A: points[find_n(i, j)].point, B: points[find_n(i + 1, j + 1)].point,C: points[find_n(i, j + 1)].point});
+// }
+
+// j++; 
+// }
+// i++;
+// }
+
+// return triangles;
+
+// }
+
+
+
+
+// var subdivided_original_face = [];
+
+// var f = 0;
+// while(f < original_faces.length){
+// 	subdivided_original_face[f] = [];
+// 	subdivided_original_face[f] = subdivide_triangle(original_faces[f], number_of_subdivisions);
+
+
+// var a = 0;
+// while(a < subdivided_original_face[f].length){
+
+// var pushed_to_sphere = {A:move_to_sphere(subdivided_original_face[f][a].A), B:move_to_sphere(subdivided_original_face[f][a].B), C:move_to_sphere(subdivided_original_face[f][a].C)};
+// faces.push(pushed_to_sphere);
+// a++;	
+// }
+// f++;
+// }
+
+var base_faces = saved_sphere[number_of_subdivisions];
+var faces = [];
+var rotateTri = 0;
+while(rotateTri < base_faces.length){
+// faces[rotateTri].A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+// faces[rotateTri].B = add(rotate(subtract(faces[rotateTri].B, position), axis, angle), position);
+// faces[rotateTri].C = add(rotate(subtract(faces[rotateTri].C, position), axis, angle), position);
+//faces[rotateTri] = {A: add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position), B:add(rotate(subtract(faces[rotateTri].B, position), axis, angle), position), C:add(rotate(subtract(faces[rotateTri].C, position), axis, angle), position)}//"Z://.A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+
+faces[rotateTri] = {A: add(scale(rotate(subtract(base_faces[rotateTri].A, {x:0, y:0, z:0}), axis, angle), radius), position), B:add(scale(rotate(subtract(base_faces[rotateTri].B, {x:0, y:0, z:0}), axis, angle), radius), position), C:add(scale(rotate(subtract(base_faces[rotateTri].C, {x:0, y:0, z:0}), axis, angle), radius), position)}//"Z://.A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+
+rotateTri++;
+}
+
+// var sortFaces = [];
+
+// var sortNumber = 0;
+// while(sortNumber < faces.length){
+// sortFaces[sortNumber] = {A:faces[sortNumber].A, B:faces[sortNumber].B, C:faces[sortNumber].C, distance:magnitude(subtract(viewingPosition, scale(add(add(faces[sortNumber].A, faces[sortNumber].B), faces[sortNumber].C), 1/3)))};
+
+// sortNumber++;
+// }
+
+// sortFaces.sort(function(a, b){return b.distance - a.distance;});
+// //c.beginPath();
+var normalizedLight = scale(normalize(light_vector), -1)//= //- 
+var drawTri = 0;
+while(drawTri < faces.length){
+// var perspA = perspective(sortFaces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition)
+// var perspB =  perspective(sortFaces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition)
+// var perspC = perspective(sortFaces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition)
+var perspA = perspective(faces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition)
+var perspB =  perspective(faces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition)
+var perspC = perspective(faces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition)
+
+
+   if ((perspB.x-perspA.x) * (perspC.y-perspA.y) - (perspB.y - perspA.y) * (perspC.x-perspA.x) <= 0) {
+        drawTri++;
+        continue;
+    }
+
+//c.beginPath();
+var centroid = scale(add(add(faces[drawTri].A, faces[drawTri].B), faces[drawTri].C), 1/3);
+var surface_vector = normalize(subtract(centroid, position));//(position, centroid);
+var scalingBrightness = Math.max(0, dot(surface_vector, normalizedLight))*0.85;// * 0.85);//dot(surface_vector, normalizedLight) * 0.85;
+var ambient = 0.15;
+c.fillStyle = `rgb(
+		${r * (scalingBrightness+ambient)}, 
+		${g * (scalingBrightness+ambient)}, 
+		${b * (scalingBrightness+ambient)})`	
+c.strokeStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`
+		c.lineWidth = 1;
+    
+c.beginPath();
+
+c.moveTo(Sizing * perspA.x, canvas.height - Sizing * perspA.y);
+c.lineTo(Sizing * perspB.x, canvas.height - Sizing * perspB.y);
+// c.stroke();
+// c.fill();
+c.lineTo(Sizing * perspC.x, canvas.height - Sizing * perspC.y);
+c.closePath();
+c.fill();
+c.stroke();
+	drawTri++;
+
+}
+// c.fill();
+
+// c.stroke();
+// //c.fill();
+
+}
+
+
+
+
+
 function Patterned_Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions, half1, half2){
 	var icosahedron = [];
 var t = (1 +  Math.sqrt(5))/2;
@@ -2599,6 +3228,106 @@ angular_position[loop_through_system] = add(angular_position[loop_through_system
 
 }
 
+
+//Spatial Hashing
+var spacing = 2*radius[0]//4 * radius[0];
+var size_storage = numberOfElements;
+
+var array_of_particles;
+var startCell; 
+var vals;
+var coordinatesCell;
+
+
+function findBox(position){
+return{x:Math.floor(position.x/spacing), y:Math.floor(position.y/spacing), z:Math.floor(position.z/spacing)};
+
+}
+
+function hash(x,y,z){
+  var h1 = Math.imul(x, 92837111) ^
+        Math.imul(y, 689287499) ^
+        Math.imul(z, 283923481);
+
+        return (h1 >>> 0) % size_storage;
+}
+
+//function spatialHashing(){}
+
+coordinatesCell = new Array(numberOfElements);
+vals = new Int32Array(size_storage);
+
+var iH = 0;
+while(iH < numberOfElements){
+var tH = findBox(position[iH]);
+coordinatesCell[iH] = findBox(position[iH]);
+
+vals[hash(tH.x, tH.y, tH.z)]++;
+
+iH ++;  
+}
+
+startCell = new Int32Array(size_storage);
+var sum_now = 0;
+
+var ssI = 0;
+while(ssI < size_storage){
+startCell[ssI] = sum_now;
+sum_now += vals[ssI];
+ssI++;
+}
+
+
+
+var shiftChange = startCell.slice();
+array_of_particles = new Int32Array(numberOfElements);
+var pAI = 0;
+while(pAI < numberOfElements){
+var tCo = coordinatesCell[pAI];
+
+var hCo = hash(tCo.x, tCo.y, tCo.z);
+
+array_of_particles[shiftChange[hCo]++] = pAI;
+pAI++; 
+}
+
+
+function findNearby(i){
+var Cell = coordinatesCell[i]
+var Neighbor = [];
+
+for(var Dx = -1; Dx <= 1;  Dx++){
+for(var Dy = -1; Dy <= 1;  Dy++){
+for(var Dz = -1; Dz <= 1;  Dz++){
+
+var X = Cell.x + Dx;
+var Y = Cell.y + Dy;
+var Z = Cell.z + Dz;
+
+var Hash = hash(X, Y, Z);
+var Start = startCell[Hash];
+var End = Start + vals[Hash];
+
+for(var K = Start; K < End; K++){
+var J = array_of_particles[K];
+var other1 = coordinatesCell[J];
+    if (other1.x !== X || other1.y !== Y || other1.z !== Z){continue;}
+
+if (i !== J) {Neighbor.push(J);
+
+}
+}
+} 
+}
+}
+
+
+return Neighbor;
+}
+
+
+
+
 calcNumber = 0;
 while(calcNumber < numberOfElements){
 
@@ -2714,62 +3443,7 @@ if(position[calcNumber].z < radius[calcNumber] - deformation * radius[calcNumber
 }
 
 if(collision_method == "Standard"){
-/*
-    if(position[calcNumber].x > box.width - radius[calcNumber] + deformation * radius[calcNumber] && velocity[calcNumber].x > 0){
-        change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x *-1 * wallElasticity, y:velocity[calcNumber].y, z:velocity[calcNumber].z}, velocity[calcNumber]));
 
-  //For changing boundaries, changing position is useful
-  position[calcNumber].x = box.width - radius[calcNumber];
-
-	velocity[calcNumber].x *= -1 * wallElasticity;
-
-	}
-	
-if(position[calcNumber].x < radius[calcNumber] - deformation * radius[calcNumber] && velocity[calcNumber].x < 0){
-    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x *-1 * wallElasticity, y:velocity[calcNumber].y, z:velocity[calcNumber].z}, velocity[calcNumber]));
-
-      //For changing boundaries, changing position is useful
-  position[calcNumber].x = radius[calcNumber];
-
-	velocity[calcNumber].x *= -1 * wallElasticity;
-}
-
-if(position[calcNumber].y > box.height - radius[calcNumber] + deformation * radius[calcNumber] && velocity[calcNumber].y > 0){
-    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y * -1 * wallElasticity, z:velocity[calcNumber].z}, velocity[calcNumber]));
-
-      //For changing boundaries, changing position is useful
-  position[calcNumber].y = box.height - radius[calcNumber];
-
-	velocity[calcNumber].y *= -1 * wallElasticity;
-}
-
-if(position[calcNumber].y < radius[calcNumber] - deformation * radius[calcNumber] && velocity[calcNumber].y < 0){
-    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y * -1 * wallElasticity, z:velocity[calcNumber].z}, velocity[calcNumber]));
-
-          //For changing boundaries, changing position is useful
-  position[calcNumber].y = radius[calcNumber];
-
-	velocity[calcNumber].y *= -1 * wallElasticity;
-}
-
-if(position[calcNumber].z > box.depth - radius[calcNumber] + deformation * radius[calcNumber] && velocity[calcNumber].z > 0){
-    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y, z:velocity[calcNumber].z * -1 * wallElasticity}, velocity[calcNumber]));
-
-          //For changing boundaries, changing position is useful
-  position[calcNumber].z = box.depth - radius[calcNumber];
-
-	velocity[calcNumber].z *= -1 * wallElasticity;
-}
-
-if(position[calcNumber].z < radius[calcNumber] - deformation * radius[calcNumber] && velocity[calcNumber].z < 0){
-    change_in_momentum_due_to_wall_collisions += mass[calcNumber] *  magnitude(subtract({x:velocity[calcNumber].x, y:velocity[calcNumber].y, z:velocity[calcNumber].z * -1 * wallElasticity}, velocity[calcNumber]));
-
-          //For changing boundaries, changing position is useful
-  position[calcNumber].y = radius[calcNumber];
-
-velocity[calcNumber].z *= -1 * wallElasticity;
-}
-*/
 //Brings within walls if it ever leaves
 if(position[calcNumber].x > box.width - radius[calcNumber] + deformation * radius[calcNumber]){
   //For changing boundaries, changing position is useful
@@ -2849,10 +3523,16 @@ velocity[calcNumber].z *= -1 * wallElasticity;
 }
 
 if(consider_collisions == true){
-//Collisions
+
+var Neighbors = findNearby(calcNumber)
+
+
+
+
+  //Collisions
 pvelocity[calcNumber] = velocity[calcNumber];
-n = calcNumber + 1;
-while(n < numberOfElements){
+//n = calcNumber + 1;
+for(var n of Neighbors){//n < numberOfElements){
 if(position[calcNumber].x + radius[calcNumber] > position[n].x - radius[n] && position[n].x + radius[n] > position[calcNumber].x - radius[calcNumber]  && position[calcNumber].y + radius[calcNumber] > position[n].y - radius[n] && position[n].y + radius[n] > position[calcNumber].y - radius[calcNumber] && position[calcNumber].z + radius[calcNumber] > position[n].z - radius[n] && position[n].z + radius[n] > position[calcNumber].z - radius[calcNumber]){
 if(magnitude(subtract(position[n], position[calcNumber]))  <  radius[calcNumber] +  radius[n] - deformation * radius[calcNumber] && n !==  calcNumber){
 
@@ -2901,11 +3581,17 @@ pvelocity[n] = velocity[n];
 }
 
 }}
-n++;
+//n++;
 }
 }
 calcNumber++;
 }
+
+
+
+
+
+
 
 if(use_moving_object == true){
 center = position[center_number];
@@ -3283,22 +3969,25 @@ while(ballNumber < numberOfElements){
 
 
 //Draw Sphere
-c.fillStyle = `rgb(
-		${sorted_by_distance[ballNumber].color.R}, 
-		${sorted_by_distance[ballNumber].color.G}, 
-		${sorted_by_distance[ballNumber].color.B})`	
-c.strokeStyle = `rgb(
-		${0}, 
-		${0}, 
-		${0})`
-		c.lineWidth = 1;
+// c.fillStyle = `rgb(
+// 		${sorted_by_distance[ballNumber].color.R}, 
+// 		${sorted_by_distance[ballNumber].color.G}, 
+// 		${sorted_by_distance[ballNumber].color.B})`	
+// c.strokeStyle = `rgb(
+// 		${0}, 
+// 		${0}, 
+// 		${0})`
+// 		c.lineWidth = 1;
 
 //icosphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), icosphereRecursion);
 //PatternedIcosphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), icosphereRecursion, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
 //UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks);
 //Patterned_UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
-Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions);
+//Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions);
 //Patterned_Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2);
+//New_Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions);
+//Shaded_New_Geodesic_Sphere
+Shaded_New_Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions, sorted_by_distance[ballNumber].color.R, sorted_by_distance[ballNumber].color.G, sorted_by_distance[ballNumber].color.B, {x:0, y:0, z:-1});
 
 ballNumber++;
 }
@@ -3475,15 +4164,17 @@ while(velocities < maxVelocity){
 		velocities += 1;    
 }
 
-var mean_speed_text = "Mean speed = " + mean_speed + " m/s";
-var RMS_speed_text =  "RMS speed = "  + RMS_speed + " m/s";
-var maximum_speed_text = "Maximum speed = " + maximum_speed + " m/s";
-var particle_mass_text = "Particle mass = " + particle_mass + " kg";
-var particle_radius_text = "Particle radius = " + particle_radius + " m";
-var total_energy_text = "Total energy = " + total_energy + " J";
-var temperature_text = "Temperature = " + temperature + " K";
-var volume_text = "Volume = " + volume + " m^3";
-var pressure_text = "Pressure = " + Math.round(100*pressure/100000)/100 + " Bar";
+
+
+var mean_speed_text = "Mean speed = " + Round(mean_speed, 2) + " m/s";
+var RMS_speed_text =  "RMS speed = "  + Round(RMS_speed,2) + " m/s";
+var maximum_speed_text = "Maximum speed = " + Round(maximum_speed,2) + " m/s";
+var particle_mass_text = "Particle mass = " + particle_mass.toExponential(2) + " kg";
+var particle_radius_text = "Particle radius = " + particle_radius.toExponential(2) + " m";
+var total_energy_text = "Total energy = " + total_energy.toExponential(2) + " J";
+var temperature_text = "Temperature = " + Round(temperature,2) + " K";
+var volume_text = "Volume = " + volume.toExponential(2) + " m^3";
+var pressure_text = "Pressure = " + pressure.toExponential(2) + " Pa";
 var number_of_particles_text = "Number of particles = " + numberOfElements;
 var x_axis_text = "Speed (m/s)";
 var y_axis_text = "Probability Density (s/m)";
