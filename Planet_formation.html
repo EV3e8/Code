@@ -844,8 +844,29 @@ var radii = [31e-12,38e-12,71e-12,87e-12,115e-12];
 var masses = [6.6465e-27, 3.35e-26, 6.63e-26, 1.39e-25, 2.18e-25];
 var colors = [{R:10, G:100, B:80},{R:200, G:80, B:100},{R:10, G:100, B:180},{R:100, G:200, B:220},{R:100, G:100, B:220}];
 
+// var brightness_scale = 2;//1.3;//1;
+// colors[0].R *= brightness_scale;
+// colors[0].G *= brightness_scale;
+// colors[0].B *= brightness_scale;
+
+// colors[1].R *= brightness_scale;
+// colors[1].G *= brightness_scale;
+// colors[1].B *= brightness_scale;
+
+// colors[2].R *= brightness_scale;
+// colors[2].G *= brightness_scale;
+// colors[2].B *= brightness_scale;
+
+// colors[3].R *= brightness_scale;
+// colors[3].G *= brightness_scale;
+// colors[3].B *= brightness_scale;
+
+// colors[4].R *= brightness_scale;
+// colors[4].G *= brightness_scale;
+// colors[4].B *= brightness_scale;
 
 var temperature_original = 298.15;
+
 
 var time_pressure = 0;
 
@@ -872,7 +893,7 @@ var angular_position = [];
 var angular_velocity = [];
 var torque = [];
 var moment_of_Inertia = [];
-var timeStep = 20//15//10//100//#2000//1000;//100;//0.5e-15;
+var timeStep = 20;//20;//20//15//10//100//#2000//1000;//100;//0.5e-15;
 var numSteps = 6;///6;/10//3//5//20//5000//10000;//1000;//10000;//100; 
 var numberOfElements = 100;//80;//0//#311//0;//200;
 var Gravitational_Force = [];
@@ -919,7 +940,7 @@ var use_moving_object = false;//true;//f/alse;
 var center_number = 3;//5;
 //Integration methods
 //"Euler, Runge-Kutta, Semi-implicit Euler, Verlet, Leapfrog"
-var integration = "Verlet";//://"Semi-implicit Euler";//"Runge-Kutta";//"Semi-implicit Euler";
+var integration = "Semi-implicit Euler";//"Verlet";//://"Semi-implicit Euler";//"Runge-Kutta";//"Semi-implicit Euler";
 
 //Consider each force
 var consider__newtonian_gravity = true;//false;// was not used before 12:01 PM - 12:02 PM February 20 2025 changed on July 27 11:39 PM
@@ -933,7 +954,7 @@ var consider_intermolecular = false;//true;
 var consider_general_relativity = false;
 if(consider_general_relativity == true){consider__newtonian_gravity = false;}
 //Numbers in use
-var elasticity = 0.99;//0.97//#0.95////0.8;//;1;
+var elasticity = 0.97;//0.99;//0.97//#0.95////0.8;//;1;
 var wallElasticity = 1;
 var µ_s = 0;
 var µ_k = 0;
@@ -953,20 +974,20 @@ var collision_method = "Standard";
 var consider_rotation = false;
 
 //Finding collisions or not
-var consider_collisions = true;// false;
+var consider_collisions = true;//false;//true;//false;//true;// false;
 
 //Useful Variables
 var pvelocity = [];
 var change = [];
 var n;
 var arrowAngle = Pi/8;
-var deformation = 0.01;
+var deformation = 0;//0.00001;//0.01;
 var half1 = [];
 var half2 = [];
 var icosphereRecursion = 4;
 var number_of_slices = 20;
 var number_of_stacks = 20;
-var number_of_subdivisions  = 2;//3;//1;
+var number_of_subdivisions  = 3;//2;//3;//1;
 var pvelocity = [];
 var calculate_energy = false;
 //Orbital periods
@@ -1250,12 +1271,35 @@ half2[a] = {R:255*Math.round(Random(0, 1)),G:255*Math.round(Random(0, 1)),B:255*
 //var vTot =  Math.sqrt(3 * start_temperature * Boltzmann_Constant/mass[a]); 
 //velocity[a] = scale({x:vTot * RandomSign(), y:vTot * RandomSign(), z:vTot * RandomSign()}, 1/Math.sqrt(3));
 var density = 2650;
-mass[a] = Random(2e20, 8e20);//4e20;
+mass[a] = Random(2e20 * Math.pow(0.8, 3), 54e20 * Math.pow(0.8, 3));//8e20 * Math.pow(0.8, 1/3));//d//Random(2e20, 54e20);//Random(2e20, 54e20);//};//-}//}//8e20);//4e20;
 charge[a] = 0;
 radius[a] = Math.cbrt(3/4/Pi*(mass[a]/density));
 //force[a] = {x:0,y:0,z:0};
 position[a] = {x:Random(-3e6,3e6),y:Random(-3e6,3e6),z:Random(-3e6,3e6)};
-color[a] = {R:Random(190,245),G:Random(140,185),B:Random(50,170)};
+
+colors = [{R:35, G:35, B:35}, {R:110, G:100, B:88}, {R:95, G:95, B:98}, {R: 152, G: 96, B: 80}];//{R:162, G:76, B:62}]//, {R:, G:, B:}]
+var brightness_scale = 1.3;//2;//1.3;//1;
+colors[0].R *= brightness_scale;
+colors[0].G *= brightness_scale;
+colors[0].B *= brightness_scale;
+
+colors[1].R *= brightness_scale;
+colors[1].G *= brightness_scale;
+colors[1].B *= brightness_scale;
+
+colors[2].R *= brightness_scale;
+colors[2].G *= brightness_scale;
+colors[2].B *= brightness_scale;
+
+colors[3].R *= brightness_scale;
+colors[3].G *= brightness_scale;
+colors[3].B *= brightness_scale;
+
+// colors[4].R *= brightness_scale;
+// colors[4].G *= brightness_scale;
+// colors[4].B *= brightness_scale;
+
+color[a] = colors[Math.floor(Random(0, 4))];//c]//{R:Random(30,120),G:Random(35,125),B:Random(20,105)};//{R:Random(190,245),G:Random(120,165),B:Random(50,170)};//{R:Random(190,245),G:Random(60,105),B:Random(50,170)};//p//{R:Random(190,245),G:Random(140,185),B:Random(50,170)};//{R:Random(190,245),G:Random(140,185),B:Random(50,170)};
 var vel = 500;//200;//50;//100;
 velocity[a] = {x:Random(-vel, vel), y:Random(-vel, vel), z:Random(-vel, vel)}; //{x:0,y:0,z:0};//scale({x:vTot * RandomSign(), y:vTot * RandomSign(), z:vTot * RandomSign()}, 1/Math.sqrt(3));
 
@@ -2187,6 +2231,412 @@ c.fill();
 }
 
 }
+
+
+function Unit_Geodesic_Sphere(number_of_subdivisions){
+var radius = 1;//{x:1};
+var position = {x:0, y:0, z:0}
+//var icosahedron
+var icosahedron = [];
+var t = (1 +  Math.sqrt(5))/2;
+
+icosahedron.push({x: - 1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x: - 1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+icosahedron.push({x:1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+
+var original_faces = [];
+var faces = [];
+function icosahedronTriangles(a, b, c){
+original_faces.push({A:icosahedron[a], B:icosahedron[b], C:icosahedron[c]});
+}
+
+icosahedronTriangles(0, 11, 5);
+icosahedronTriangles(0, 5, 1);
+icosahedronTriangles(0, 1, 7);
+icosahedronTriangles(0, 7, 10);
+icosahedronTriangles(0, 10, 11);
+
+icosahedronTriangles(1, 5, 9);
+icosahedronTriangles(5, 11, 4);
+icosahedronTriangles(11, 10, 2);
+icosahedronTriangles(10, 7, 6);
+icosahedronTriangles(7, 1, 8);
+
+icosahedronTriangles(3, 9, 4);
+icosahedronTriangles(3, 4, 2);
+icosahedronTriangles(3, 2, 6);
+icosahedronTriangles(3, 6, 8);
+icosahedronTriangles(3, 8, 9);
+
+icosahedronTriangles(4, 9, 5);
+icosahedronTriangles(2, 4, 11);
+icosahedronTriangles(6, 2, 10);
+icosahedronTriangles(8, 6, 7);
+icosahedronTriangles(9, 8, 1);
+
+function move_to_sphere(a){
+return add(scale(normalize(subtract(a, position)), radius), position);
+}
+
+function subdivide_triangle(triangle, number_of_subdivisions){
+var A = triangle.A;
+var B = triangle.B;
+var C = triangle.C;
+
+var points = [];
+var triangles = [];
+var i = 0;
+while(i <= number_of_subdivisions){
+var j = 0;
+while(j <= i){
+var new_point;
+if(i == 0){
+new_point = A;	
+}	
+else{
+new_point = add(add(A, scale(subtract(B, A), i/number_of_subdivisions)), scale(subtract(C, B), j/number_of_subdivisions));
+}
+points.push({point:new_point, i:i, j:j});
+j++;	
+}
+i++;	
+}
+
+function find_n(i, j){
+    if(i == 0){return 0;}
+else{
+return i * (i + 1)/2 + j;    
+}
+}
+
+// var p = 0;
+// while(p < points.length){
+// var I = points[p].i;
+// var J = points[p].j;
+
+// function possible_triangles(I1, J1, I2, J2){
+// if(I1 >= 0 && J1 >= 0 && I1 <= number_of_subdivisions && J1 <= I1 && I2 >= 0 && J2 >= 0 && I2 <= number_of_subdivisions && J2 <= I2){	
+// triangles.push({A:points[p].point, B:points[find_n(I1, J1)].point, C:points[find_n(I2, J2)].point});
+// }
+// }
+
+// possible_triangles(I - 1, J, I - 1, J - 1)
+// possible_triangles(I - 1, J - 1, I, J - 1)
+// possible_triangles(I, J - 1, I + 1, J)
+// possible_triangles(I + 1, J, J, I + 1, J + 1)
+// possible_triangles(I + 1, J + 1, I, J + 1)
+// possible_triangles(I, J + 1, I - 1, J)
+
+// p++;
+// }
+
+// function removeDuplicates(arr) {
+//     return arr.filter((value,
+//         index) => arr.indexOf(value) === index);
+// }
+
+// triangles = removeDuplicates(triangles);
+var i = 0;
+while(i < number_of_subdivisions){
+var j = 0;
+while(j <= i)
+{
+triangles.push({A: points[find_n(i, j)].point, B: points[find_n(i + 1, j)].point, C: points[find_n(i + 1, j + 1)].point});
+
+if(j < i){
+triangles.push({ A: points[find_n(i, j)].point, B: points[find_n(i + 1, j + 1)].point,C: points[find_n(i, j + 1)].point});
+}
+
+j++; 
+}
+i++;
+}
+
+return triangles;
+
+}
+
+
+
+
+var subdivided_original_face = [];
+
+var f = 0;
+while(f < original_faces.length){
+	subdivided_original_face[f] = [];
+	subdivided_original_face[f] = subdivide_triangle(original_faces[f], number_of_subdivisions);
+
+
+var a = 0;
+while(a < subdivided_original_face[f].length){
+
+var pushed_to_sphere = {A:move_to_sphere(subdivided_original_face[f][a].A), B:move_to_sphere(subdivided_original_face[f][a].B), C:move_to_sphere(subdivided_original_face[f][a].C)};
+faces.push(pushed_to_sphere);
+a++;	
+}
+f++;
+}
+
+
+return faces;
+}
+var saved_sphere = [];
+saved_sphere[0] =  Unit_Geodesic_Sphere(0)
+saved_sphere[1] =  Unit_Geodesic_Sphere(1)
+saved_sphere[2] =  Unit_Geodesic_Sphere(2)
+saved_sphere[3] =  Unit_Geodesic_Sphere(3)
+saved_sphere[4] =  Unit_Geodesic_Sphere(4)
+saved_sphere[5] =  Unit_Geodesic_Sphere(5)
+saved_sphere[6] =  Unit_Geodesic_Sphere(6)
+saved_sphere[7] =  Unit_Geodesic_Sphere(7)
+saved_sphere[8] =  Unit_Geodesic_Sphere(8)
+saved_sphere[9] =  Unit_Geodesic_Sphere(9)
+saved_sphere[10] =  Unit_Geodesic_Sphere(10)
+saved_sphere[11] =  Unit_Geodesic_Sphere(11)
+saved_sphere[12] =  Unit_Geodesic_Sphere(12)
+saved_sphere[13] =  Unit_Geodesic_Sphere(13)
+saved_sphere[14] =  Unit_Geodesic_Sphere(14)
+
+function Shaded_New_Geodesic_Sphere(position, radius, axis, angle, number_of_subdivisions, r, g, b, light_vector){
+// 	var icosahedron = [];
+// var t = (1 +  Math.sqrt(5))/2;
+
+// icosahedron.push({x: - 1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+// icosahedron.push({x:1 * radius/2 +  position.x, y:t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+// icosahedron.push({x: - 1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+// icosahedron.push({x:1 * radius/2 +  position.x, y: - t * radius/2 +  position.y, z:0 * radius/2 +  position.z});
+
+// icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+// icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z:t * radius/2 +  position.z});
+// icosahedron.push({x:0 * radius/2 +  position.x, y: - 1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+// icosahedron.push({x:0 * radius/2 +  position.x, y:1 * radius/2 +  position.y, z: - t * radius/2 +  position.z});
+
+// icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+// icosahedron.push({x:t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+// icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z: - 1 * radius/2 +  position.z});
+// icosahedron.push({x: - t * radius/2 +  position.x, y:0 * radius/2 +  position.y, z:1 * radius/2 +  position.z});
+
+// var original_faces = [];
+// var faces = [];
+// function icosahedronTriangles(a, b, c){
+// original_faces.push({A:icosahedron[a], B:icosahedron[b], C:icosahedron[c]});
+// }
+
+// icosahedronTriangles(0, 11, 5);
+// icosahedronTriangles(0, 5, 1);
+// icosahedronTriangles(0, 1, 7);
+// icosahedronTriangles(0, 7, 10);
+// icosahedronTriangles(0, 10, 11);
+
+// icosahedronTriangles(1, 5, 9);
+// icosahedronTriangles(5, 11, 4);
+// icosahedronTriangles(11, 10, 2);
+// icosahedronTriangles(10, 7, 6);
+// icosahedronTriangles(7, 1, 8);
+
+// icosahedronTriangles(3, 9, 4);
+// icosahedronTriangles(3, 4, 2);
+// icosahedronTriangles(3, 2, 6);
+// icosahedronTriangles(3, 6, 8);
+// icosahedronTriangles(3, 8, 9);
+
+// icosahedronTriangles(4, 9, 5);
+// icosahedronTriangles(2, 4, 11);
+// icosahedronTriangles(6, 2, 10);
+// icosahedronTriangles(8, 6, 7);
+// icosahedronTriangles(9, 8, 1);
+
+// function move_to_sphere(a){
+// return add(scale(normalize(subtract(a, position)), radius), position);
+// }
+
+// function subdivide_triangle(triangle, number_of_subdivisions){
+// var A = triangle.A;
+// var B = triangle.B;
+// var C = triangle.C;
+
+// var points = [];
+// var triangles = [];
+// var i = 0;
+// while(i <= number_of_subdivisions){
+// var j = 0;
+// while(j <= i){
+// var new_point;
+// if(i == 0){
+// new_point = A;	
+// }	
+// else{
+// new_point = add(add(A, scale(subtract(B, A), i/number_of_subdivisions)), scale(subtract(C, B), j/number_of_subdivisions));
+// }
+// points.push({point:new_point, i:i, j:j});
+// j++;	
+// }
+// i++;	
+// }
+
+// function find_n(i, j){
+//     if(i == 0){return 0;}
+// else{
+// return i * (i + 1)/2 + j;    
+// }
+// }
+
+// // var p = 0;
+// // while(p < points.length){
+// // var I = points[p].i;
+// // var J = points[p].j;
+
+// // function possible_triangles(I1, J1, I2, J2){
+// // if(I1 >= 0 && J1 >= 0 && I1 <= number_of_subdivisions && J1 <= I1 && I2 >= 0 && J2 >= 0 && I2 <= number_of_subdivisions && J2 <= I2){	
+// // triangles.push({A:points[p].point, B:points[find_n(I1, J1)].point, C:points[find_n(I2, J2)].point});
+// // }
+// // }
+
+// // possible_triangles(I - 1, J, I - 1, J - 1)
+// // possible_triangles(I - 1, J - 1, I, J - 1)
+// // possible_triangles(I, J - 1, I + 1, J)
+// // possible_triangles(I + 1, J, J, I + 1, J + 1)
+// // possible_triangles(I + 1, J + 1, I, J + 1)
+// // possible_triangles(I, J + 1, I - 1, J)
+
+// // p++;
+// // }
+
+// // function removeDuplicates(arr) {
+// //     return arr.filter((value,
+// //         index) => arr.indexOf(value) === index);
+// // }
+
+// // triangles = removeDuplicates(triangles);
+// var i = 0;
+// while(i < number_of_subdivisions){
+// var j = 0;
+// while(j <= i)
+// {
+// triangles.push({A: points[find_n(i, j)].point, B: points[find_n(i + 1, j)].point, C: points[find_n(i + 1, j + 1)].point});
+
+// if(j < i){
+// triangles.push({ A: points[find_n(i, j)].point, B: points[find_n(i + 1, j + 1)].point,C: points[find_n(i, j + 1)].point});
+// }
+
+// j++; 
+// }
+// i++;
+// }
+
+// return triangles;
+
+// }
+
+
+
+
+// var subdivided_original_face = [];
+
+// var f = 0;
+// while(f < original_faces.length){
+// 	subdivided_original_face[f] = [];
+// 	subdivided_original_face[f] = subdivide_triangle(original_faces[f], number_of_subdivisions);
+
+
+// var a = 0;
+// while(a < subdivided_original_face[f].length){
+
+// var pushed_to_sphere = {A:move_to_sphere(subdivided_original_face[f][a].A), B:move_to_sphere(subdivided_original_face[f][a].B), C:move_to_sphere(subdivided_original_face[f][a].C)};
+// faces.push(pushed_to_sphere);
+// a++;	
+// }
+// f++;
+// }
+
+var base_faces = saved_sphere[number_of_subdivisions];
+var faces = [];
+var rotateTri = 0;
+while(rotateTri < base_faces.length){
+// faces[rotateTri].A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+// faces[rotateTri].B = add(rotate(subtract(faces[rotateTri].B, position), axis, angle), position);
+// faces[rotateTri].C = add(rotate(subtract(faces[rotateTri].C, position), axis, angle), position);
+//faces[rotateTri] = {A: add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position), B:add(rotate(subtract(faces[rotateTri].B, position), axis, angle), position), C:add(rotate(subtract(faces[rotateTri].C, position), axis, angle), position)}//"Z://.A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+
+faces[rotateTri] = {A: add(scale(rotate(subtract(base_faces[rotateTri].A, {x:0, y:0, z:0}), axis, angle), radius), position), B:add(scale(rotate(subtract(base_faces[rotateTri].B, {x:0, y:0, z:0}), axis, angle), radius), position), C:add(scale(rotate(subtract(base_faces[rotateTri].C, {x:0, y:0, z:0}), axis, angle), radius), position)}//"Z://.A = add(rotate(subtract(faces[rotateTri].A, position), axis, angle), position);
+
+rotateTri++;
+}
+
+// var sortFaces = [];
+
+// var sortNumber = 0;
+// while(sortNumber < faces.length){
+// sortFaces[sortNumber] = {A:faces[sortNumber].A, B:faces[sortNumber].B, C:faces[sortNumber].C, distance:magnitude(subtract(viewingPosition, scale(add(add(faces[sortNumber].A, faces[sortNumber].B), faces[sortNumber].C), 1/3)))};
+
+// sortNumber++;
+// }
+
+// sortFaces.sort(function(a, b){return b.distance - a.distance;});
+// //c.beginPath();
+var normalizedLight = scale(normalize(light_vector), -1)//= //- 
+var drawTri = 0;
+while(drawTri < faces.length){
+// var perspA = perspective(sortFaces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition)
+// var perspB =  perspective(sortFaces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition)
+// var perspC = perspective(sortFaces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition)
+var perspA = perspective(faces[drawTri].A, viewingPosition, viewingAngle, displaySurfacePosition)
+var perspB =  perspective(faces[drawTri].B, viewingPosition, viewingAngle, displaySurfacePosition)
+var perspC = perspective(faces[drawTri].C, viewingPosition, viewingAngle, displaySurfacePosition)
+
+
+   if ((perspB.x-perspA.x) * (perspC.y-perspA.y) - (perspB.y - perspA.y) * (perspC.x-perspA.x) <= 0) {
+        drawTri++;
+        continue;
+    }
+
+//c.beginPath();
+var centroid = scale(add(add(faces[drawTri].A, faces[drawTri].B), faces[drawTri].C), 1/3);
+var surface_vector = normalize(subtract(centroid, position));//(position, centroid);
+var scalingBrightness = Math.max(0, dot(surface_vector, normalizedLight))*0.85;// * 0.85);//dot(surface_vector, normalizedLight) * 0.85;
+var ambient = 0.15;
+c.fillStyle = `rgb(
+		${r * (scalingBrightness+ambient)}, 
+		${g * (scalingBrightness+ambient)}, 
+		${b * (scalingBrightness+ambient)})`	
+c.strokeStyle = `rgb(
+		${0}, 
+		${0}, 
+		${0})`
+		c.lineWidth = 1;
+    
+c.beginPath();
+
+c.moveTo(Sizing * perspA.x, canvas.height - Sizing * perspA.y);
+c.lineTo(Sizing * perspB.x, canvas.height - Sizing * perspB.y);
+// c.stroke();
+// c.fill();
+c.lineTo(Sizing * perspC.x, canvas.height - Sizing * perspC.y);
+c.closePath();
+c.fill();
+c.stroke();
+	drawTri++;
+
+}
+// c.fill();
+
+// c.stroke();
+// //c.fill();
+
+}
+
+
 function arrow(vectorPosition, vector, axisOfEnd, endLength, endAngle,viewingPosition, viewingAngle, displaySurfacePosition){
 c.beginPath();
 c.moveTo(Sizing * perspective(vectorPosition, viewingPosition, viewingAngle, displaySurfacePosition).x, canvas.height - Sizing * perspective(vectorPosition, viewingPosition, viewingAngle, displaySurfacePosition).y);
@@ -2387,8 +2837,8 @@ return molecular_force(epsilon,sigma,position[n1],position[n2]);
 
 var earlier = 0;
 while(earlier < numberOfElements){
-earlier_position[earlier] = position[earlier];
-earlier_velocity[earlier] = velocity[earlier];
+earlier_position[earlier] = {x:position[earlier].x, y:position[earlier].y, z:position[earlier].z};
+earlier_velocity[earlier] = {x:velocity[earlier].x, y:velocity[earlier].y, z:velocity[earlier].z};
 
 earlier++;	
 }
@@ -2967,18 +3417,42 @@ velocity[calcNumber].z *= -1 * wallElasticity;
 
 }
 
+
 if(consider_collisions == true){
 //Collisions
-pvelocity[calcNumber] = velocity[calcNumber];
+//pvelocity[calcNumber] = {x:velocity[calcNumber].x, y:velocity[calcNumber].y, z:velocity[calcNumber].z};
+
+function computeTime(x1, x2, v1, v2, r1, r2){
+var v_rel = subtract(v2, v1);
+var x_rel = subtract(x2,x1);
+var R = r1+r2;
+//var cA = Math.cos(Math.asin(Math.sin(Math.acos(dot(normalize(x_rel), scale(normalize(v_rel), -1)))) * magnitude(x_rel)/R));
+var cos_theta = dot(normalize(x_rel), scale(normalize(v_rel), -1));
+cos_theta = Math.max(-1, Math.min(1, cos_theta));
+var cA = Math.sqrt(1 - (1-cos_theta*cos_theta)*Math.pow(magnitude(x_rel)/R, 2));
+
+//var d = ((-2 * R * cA)+Math.sqrt(4 * R * R * cA * cA - 4 * (1) * (R * R - Math.pow(magnitude(x_rel), 2))))/2
+var d = -R * cA + magnitude(x_rel) *cos_theta;  
+var t = -d/magnitude(v_rel);//d/magnitude(v_rel);
+
+return t;
+}
+
+
 n = calcNumber + 1;
 while(n < numberOfElements){
 if(position[calcNumber].x + radius[calcNumber] > position[n].x - radius[n] && position[n].x + radius[n] > position[calcNumber].x - radius[calcNumber]  && position[calcNumber].y + radius[calcNumber] > position[n].y - radius[n] && position[n].y + radius[n] > position[calcNumber].y - radius[calcNumber] && position[calcNumber].z + radius[calcNumber] > position[n].z - radius[n] && position[n].z + radius[n] > position[calcNumber].z - radius[calcNumber]){
-if(magnitude(subtract(position[n], position[calcNumber]))  <  radius[calcNumber] +  radius[n] - deformation * radius[calcNumber] && n !==  calcNumber){
+if(magnitude(subtract(position[n], position[calcNumber]))  <  radius[calcNumber] +  radius[n] - 0 *   radius[calcNumber] && n !==  calcNumber){
 
 //Separates balls
-change[calcNumber] = ((radius[calcNumber] +  radius[n]) - magnitude(subtract(position[calcNumber], position[n])))/2;
-position[calcNumber] = add(position[calcNumber], scale(normalize(subtract(position[calcNumber], position[n])), change[calcNumber]));
-position[n] = add(position[n], scale(normalize(subtract(position[n], position[calcNumber])), change[calcNumber]));
+// change[calcNumber] = ((radius[calcNumber] +  radius[n]) - magnitude(subtract(position[calcNumber], position[n])));
+// position[calcNumber] = add(position[calcNumber], scale(normalize(subtract(position[calcNumber], position[n])), mass[n]/(mass[n] +mass[calcNumber])* change[calcNumber]));
+// position[n] = add(position[n], scale(normalize(subtract(position[n], position[calcNumber])), mass[calcNumber]/(mass[n] +mass[calcNumber])* change[calcNumber]));
+
+
+// change[calcNumber] = ((radius[calcNumber] +  radius[n]) - magnitude(subtract(position[calcNumber], position[n])));
+// position[calcNumber] = add(position[calcNumber], scale(normalize(subtract(position[calcNumber], position[n])), mass[n]/(mass[n] +mass[calcNumber])* change[calcNumber]));
+// position[n] = add(position[n], scale(normalize(subtract(position[n], position[calcNumber])), mass[calcNumber]/(mass[n] +mass[calcNumber])* change[calcNumber]));
 
 if(collision_method == "General Rigid Body"){
 //Calculates the change in momentum from the collision
@@ -3008,21 +3482,56 @@ angular_velocity[n] = subtract(angular_velocity[n], scale(cross(r_bc, change_in_
 }
 
 if(collision_method == "Standard"){
+var R = subtract(position[n], position[calcNumber]);
+var V_rel = subtract(velocity[n], velocity[calcNumber]);
+if(dot(R, V_rel) < 0){
+
+  // change[calcNumber] = ((radius[calcNumber] +  radius[n]) - magnitude(subtract(position[calcNumber], position[n])));
+// position[calcNumber] = add(position[calcNumber], scale(normalize(subtract(position[calcNumber], position[n])), mass[n]/(mass[n] +mass[calcNumber])* change[calcNumber]));
+// position[n] = add(position[n], scale(normalize(subtract(position[n], position[calcNumber])), mass[calcNumber]/(mass[n] +mass[calcNumber])* change[calcNumber]));
+tB = computeTime(position[calcNumber], position[n], velocity[calcNumber], velocity[n], radius[calcNumber], radius[n]);
+p1B = subtract(position[calcNumber], scale(velocity[calcNumber],tB));
+p2B = subtract(position[n], scale(velocity[n], tB));
+
+
+// pvelocity[calcNumber] = {x:velocity[calcNumber].x, y:velocity[calcNumber].y, z:velocity[calcNumber].z} ;
+// pvelocity[n] =  {x:velocity[n].x, y:velocity[n].y, z:velocity[n].z} ;//velocity[n];
+
+// velocity[calcNumber] = solveCollision(position[calcNumber], position[n], pvelocity[calcNumber], pvelocity[n], mass[calcNumber], mass[n], elasticity);
+// velocity[n] = solveCollision(position[n], position[calcNumber], pvelocity[n], pvelocity[calcNumber], mass[n], mass[calcNumber], elasticity);
+
+pvelocity[calcNumber] = {x:velocity[calcNumber].x, y:velocity[calcNumber].y, z:velocity[calcNumber].z} ;
+pvelocity[n] =  {x:velocity[n].x, y:velocity[n].y, z:velocity[n].z} ;//velocity[n];
+
+velocity[calcNumber] = solveCollision(p1B, p2B, pvelocity[calcNumber], pvelocity[n], mass[calcNumber], mass[n], elasticity);
+velocity[n] = solveCollision(p2B, p1B, pvelocity[n], pvelocity[calcNumber], mass[n], mass[calcNumber], elasticity);
+
+position[calcNumber] = add(p1B, scale(velocity[calcNumber], tB))//s//add(position[calcNumber], scale(normalize(subtract(position[calcNumber], position[n])), mass[n]/(mass[n] +mass[calcNumber])* change[calcNumber]));
+position[n] = add(p2B, scale(velocity[n], tB))//add(position[n], scale(normalize(subtract(position[n], position[calcNumber])), mass[calcNumber]/(mass[n] +mass[calcNumber])* change[calcNumber]));
+
+
+
 pvelocity[calcNumber] = velocity[calcNumber];
 pvelocity[n] = velocity[n];
 
-velocity[calcNumber] = solveCollision(position[calcNumber], position[n], pvelocity[calcNumber], pvelocity[n], mass[calcNumber], mass[n], elasticity);
-velocity[n] = solveCollision(position[n], position[calcNumber], pvelocity[n], pvelocity[calcNumber], mass[n], mass[calcNumber], elasticity);
 
 pvelocity[calcNumber] = velocity[calcNumber];
 pvelocity[n] = velocity[n];
+ 
 
+//""
 }
+}
+ 
+
+
 
 }}
+
 n++;
 }
 }
+
 calcNumber++;
 }
 
@@ -3502,8 +4011,10 @@ c.strokeStyle = `rgb(
 //PatternedIcosphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), icosphereRecursion, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2,viewingPosition, viewingAngle, displaySurfacePosition);
 //UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks,viewingPosition, viewingAngle, displaySurfacePosition);
 //Patterned_UV_sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_slices, number_of_stacks, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2,viewingPosition, viewingAngle, displaySurfacePosition);
-Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions,viewingPosition, viewingAngle, displaySurfacePosition);
+//Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions,viewingPosition, viewingAngle, displaySurfacePosition);
 //Patterned_Geodesic_Sphere(sorted_by_distance[ballNumber].position,  sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions, sorted_by_distance[ballNumber].half1, sorted_by_distance[ballNumber].half2,viewingPosition, viewingAngle, displaySurfacePosition);
+
+Shaded_New_Geodesic_Sphere(sorted_by_distance[ballNumber].position, sorted_by_distance[ballNumber].radius, normalize(sorted_by_distance[ballNumber].angular_position), magnitude(sorted_by_distance[ballNumber].angular_position), number_of_subdivisions, sorted_by_distance[ballNumber].color.R, sorted_by_distance[ballNumber].color.G, sorted_by_distance[ballNumber].color.B, {x:0, y:0, z:-1})
 
 ballNumber++;
 }
@@ -4022,6 +4533,41 @@ zoomValue = zoomValue * 1.03;
 if(button2Clicked == true){
 zoomValue = zoomValue / 1.03;
 }
+
+// c.fillStyle = `rgb(
+//   ${255}, 
+//   ${255}, 
+//   ${255})`
+var pfind = {x:0, y:0, z:0};
+var xfind = {x:0, y:0, z:0};
+var Lfind = {x:0, y:0, z:0};
+var Efind = 0;
+
+var ptest = 0;
+while(ptest < numberOfElements){
+pfind = add(pfind, scale(velocity[ptest], mass[ptest]));
+xfind = add(xfind, scale(position[ptest], mass[ptest]));
+Lfind = add(Lfind, scale(cross(position[ptest], velocity[ptest]), mass[ptest]));
+Efind = Efind + 1/2 * mass[ptest] * magnitude(velocity[ptest]) * magnitude(velocity[ptest]);
+
+ptest++; 
+}
+
+c.fillStyle = `rgb(
+  ${255}, 
+  ${255}, 
+  ${255})`
+c.font = "50px georgia";
+
+c.fillText("Momentum " + Math.round(pfind.x).toExponential(2), 100, 400);
+c.fillText("Center of mass " + Math.round(xfind.x).toExponential(2), 100, 600);
+c.fillText("Energy Kinetic "+ Math.round(Efind).toExponential(2), 100, 800);
+
+
+c.fillText("Angular momentum x " + Math.round(Lfind.x).toExponential(2), 100, 1000);
+c.fillText("Angular momentum y " + Math.round(Lfind.y).toExponential(2), 100, 1200);
+c.fillText("Angular momentum z " + Math.round(Lfind.z).toExponential(2), 100, 1400);
+
 
 
 }
